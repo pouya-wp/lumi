@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3d5afe;
+  --color-primary-soft: #eef1ff;
+  --color-ink: #0e1330;
+  --color-ink-muted: #6b7194;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f7f8fc;
+  --color-night-1: #0a0f3c;
+  --color-night-2: #1b1f6b;
+
+  --color-tasks: #eef0ff;
+  --color-tasks-accent: #5b5bf0;
+  --color-calendar: #ffeff1;
+  --color-calendar-accent: #f2557a;
+  --color-notes: #fff8db;
+  --color-notes-accent: #e8a300;
+  --color-daily: #e6f8fb;
+  --color-daily-accent: #14a8c8;
+  --color-goals: #e9f9ef;
+  --color-goals-accent: #1db46a;
+  --color-time: #fff0e6;
+  --color-time-accent: #ff7a2f;
+
+  --radius-bento: 32px;
+  --font-sans: "Vazirmatn", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --shadow-glow: 0 12px 32px -12px rgb(61 90 254 / 0.45);
+  --shadow-card: 0 1px 0 rgb(14 19 48 / 0.04), 0 8px 24px -16px rgb(14 19 48 / 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #6c83ff;
+    --color-primary-soft: #1c2250;
+    --color-ink: #f2f4ff;
+    --color-ink-muted: #9aa0c3;
+    --color-surface: #0b0e22;
+    --color-surface-raised: #141838;
+  }
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  transform: rotate(-6deg);
+  box-shadow: 0 6px 16px -6px rgb(14 19 48 / 0.35);
+}
+
+.scene-sky {
+  background:
+    radial-gradient(120% 70% at 50% 120%, #7ed957 0 30%, transparent 31%),
+    radial-gradient(60% 40% at 15% 35%, #ffffffcc, transparent 70%),
+    radial-gradient(50% 30% at 85% 25%, #ffffffaa, transparent 70%),
+    linear-gradient(180deg, #4f8bff 0%, #8ec5ff 60%, #bfe3ff 100%);
+}
+
+.stars {
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 20%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 70%, #fff 50%, transparent 51%),
+    radial-gradient(2px 2px at 55% 30%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 75% 80%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 15%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 45% 55%, #fff 50%, transparent 51%),
+    linear-gradient(160deg, var(--color-night-1), var(--color-night-2));
+  animation: twinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  from { background-size: 100% 100%; }
+  to { background-size: 102% 102%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.float { animation: float 5s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stars, .float { animation: none; }
+}
