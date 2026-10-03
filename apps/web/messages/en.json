@@ -1,0 +1,36 @@
+{
+  "brand": "Lumi",
+  "by": "Made by Beyondex",
+  "nav": { "features": "Features", "methods": "Methods", "ai": "AI", "download": "Get the app", "start": "Get started" },
+  "hero": {
+    "sticker": "New ✨ AI inside",
+    "title1": "Light up",
+    "title2": "your teamwork",
+    "subtitle": "Tasks, planning, calendars, goals and chat — all in one place, with an assistant that plans your day for you.",
+    "cta": "Start for free",
+    "secondary": "Mobile app"
+  },
+  "scene": {
+    "greeting": "Good morning, Pouya",
+    "date": "Saturday, Oct 4 2026",
+    "today": "Today",
+    "focus": "Focus",
+    "team": "Team",
+    "tasks": ["Design the dashboard", "Sprint meeting at 10", "Review auth PR"],
+    "progress": "Sprint progress"
+  },
+  "bento": {
+    "title": "Lumi is not just another tool!",
+    "subtitle": "Whatever way your team works, it's in here",
+    "items": [
+      { "key": "tasks", "emoji": "✅", "title": "Smart tasks", "body": "Assign to teammates, accept or decline, negotiate deadlines." },
+      { "key": "calendar", "emoji": "📅", "title": "Jalali & Gregorian", "body": "Holidays, meetings and time blocks in one view." },
+      { "key": "goals", "emoji": "🎯", "title": "OKRs & sprints", "body": "Scrum, Kanban, GTD and Eisenhower — one click each." },
+      { "key": "time", "emoji": "⏱️", "title": "Pomodoro & time", "body": "Timers, timesheets and per-project reports." },
+      { "key": "notes", "emoji": "📝", "title": "Docs & meetings", "body": "Real-time wiki; meeting action items become tasks." },
+      { "key": "daily", "emoji": "🤖", "title": "AI assistant", "body": "“Plan my day” — Lumi handles the rest." }
+    ]
+  },
+  "night": { "title": "Time your team had a personal assistant", "cta": "Start now" },
+  "footer": { "rights": "© 2026 Beyondex — All rights reserved" }
+}
