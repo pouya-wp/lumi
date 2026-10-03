@@ -9,6 +9,11 @@ import { CommentsModule } from './comments/comments.module';
 import { AuthGuard } from './common/auth.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { FieldsModule } from './fields/fields.module';
+import { FocusModule } from './focus/focus.module';
+import { GoalsModule } from './goals/goals.module';
+import { HabitsModule } from './habits/habits.module';
+import { MilestonesModule } from './milestones/milestones.module';
+import { SprintsModule } from './sprints/sprints.module';
 import { TimeModule } from './time/time.module';
 import { ViewsModule } from './views/views.module';
 import { HealthModule } from './health/health.module';
@@ -43,6 +48,11 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     FieldsModule,
     ViewsModule,
     TimeModule,
+    SprintsModule,
+    GoalsModule,
+    HabitsModule,
+    MilestonesModule,
+    FocusModule,
     ActivityModule,
     RealtimeModule,
   ],

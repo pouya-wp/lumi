@@ -67,6 +67,13 @@ export function Sidebar() {
         {item(`${base}/timesheet`, 'clock', t('nav2.timesheet'))}
       </Section>
 
+      <Section title={t('nav2.methods')}>
+        {item(`${base}/goals`, 'flag', t('nav2.goals'))}
+        {item(`${base}/focus`, 'sparkle', t('nav2.focus'))}
+        {item(`${base}/habits`, 'checkCircle', t('nav2.habits'))}
+        {item(`${base}/roadmap`, 'globe', t('nav2.roadmap'))}
+      </Section>
+
       <Section
         title={t('nav2.projects')}
         action={<IconButton icon="plus" label={t('nav2.newProject')} className="size-6" onClick={() => setNewProject(true)} />}

@@ -110,7 +110,12 @@
     "calendar": "Calendar",
     "workload": "Workload",
     "timesheet": "Timesheet",
-    "planning": "Planning"
+    "planning": "Planning",
+    "methods": "Methods",
+    "goals": "OKRs",
+    "focus": "Focus",
+    "habits": "Habits",
+    "roadmap": "Roadmap"
   },
   "dash": {
     "welcome": "Welcome back,",
@@ -191,7 +196,8 @@
     "saveView": "Save this view",
     "viewName": "View name",
     "shared": "Share with team",
-    "noViews": "No saved views yet"
+    "noViews": "No saved views yet",
+    "sprints": "Sprints"
   },
   "myTasks": {
     "title": "My tasks",
@@ -199,7 +205,10 @@
     "overdue": "Overdue",
     "upcoming": "Upcoming",
     "open": "All open",
-    "done": "Done"
+    "done": "Done",
+    "list": "List",
+    "matrix": "Eisenhower",
+    "gtd": "GTD"
   },
   "inbox": {
     "title": "Inbox",
@@ -422,5 +431,121 @@
     "noTasks": "Nothing on this day",
     "dragHint": "Drag tasks to reschedule",
     "holiday": "Holiday"
+  },
+  "sprint": {
+    "backlog": "Backlog",
+    "new": "New sprint",
+    "name": "Sprint name",
+    "goal": "Sprint goal",
+    "start": "Start sprint",
+    "complete": "Complete sprint",
+    "planned": "Planned",
+    "active": "Active",
+    "completed": "Completed",
+    "points": "{n} pts",
+    "burndown": "Burndown",
+    "ideal": "Ideal",
+    "actual": "Actual",
+    "velocity": "Velocity",
+    "avgVelocity": "Average velocity: {n} pts",
+    "daysLeft": "{n} days left",
+    "carryNext": "Move unfinished work to the next sprint",
+    "carryBacklog": "Return unfinished work to the backlog",
+    "retro": "Retro",
+    "wentWell": "Went well 😊",
+    "improve": "To improve 🤔",
+    "actions": "Action items 🎯",
+    "addNote": "Add a note…",
+    "dragToPlan": "Drag tasks between backlog and sprints to plan",
+    "emptyBacklog": "Backlog is empty",
+    "summary": "{done} of {total} points done"
+  },
+  "goals": {
+    "title": "Objectives & key results",
+    "new": "New objective",
+    "objective": "Objective",
+    "period": "Period",
+    "addKr": "New key result",
+    "krTitle": "Key result title",
+    "type": "Type",
+    "target": "Target",
+    "start": "Start value",
+    "unit": "Unit",
+    "checkIn": "Check in",
+    "value": "Current value",
+    "confidence": "Confidence",
+    "note": "Note",
+    "linkTasks": "Linked tasks",
+    "status": {
+      "ON_TRACK": "On track",
+      "AT_RISK": "At risk",
+      "OFF_TRACK": "Off track"
+    },
+    "types": {
+      "NUMBER": "Number",
+      "PERCENT": "Percent",
+      "CURRENCY": "Currency",
+      "TASKS": "From tasks"
+    },
+    "empty": "No objectives for this period yet",
+    "owner": "Owner",
+    "overall": "Overall"
+  },
+  "focus": {
+    "title": "Focus mode",
+    "subtitle": "One task, one pomodoro, zero distractions",
+    "pickTask": "What are we focusing on?",
+    "noTask": "No task",
+    "focus": "Focus",
+    "short": "Short break",
+    "long": "Long break",
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "finish": "Finish",
+    "skip": "Skip",
+    "today": "Today",
+    "sessions": "{n} pomodoros",
+    "streak": "{n}-day streak",
+    "done": "Nice! Pomodoro complete 🍅",
+    "breakDone": "Break's over, back to it ✨",
+    "minutes": "{n} min"
+  },
+  "habits": {
+    "title": "Habits",
+    "new": "New habit",
+    "name": "Habit name",
+    "streak": "{n} days",
+    "best": "Best {n}",
+    "days": "Days",
+    "everyday": "Every day",
+    "empty": "Create your first habit — exercise, reading, water…"
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "new": "New milestone",
+    "name": "Milestone title",
+    "due": "Date",
+    "empty": "No milestones yet",
+    "project": "Project",
+    "done": "Done"
+  },
+  "matrix": {
+    "title": "Eisenhower matrix",
+    "q1": "Do",
+    "q1d": "Urgent & important",
+    "q2": "Schedule",
+    "q2d": "Important, not urgent",
+    "q3": "Delegate",
+    "q3d": "Urgent, less important",
+    "q4": "Drop",
+    "q4d": "Neither"
+  },
+  "gtd": {
+    "title": "GTD",
+    "inbox": "Inbox",
+    "next": "Next actions",
+    "waiting": "Waiting for",
+    "someday": "Someday / maybe"
   }
 }

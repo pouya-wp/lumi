@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { use, useEffect, useMemo, useState } from 'react';
 import { CalendarView } from '@/components/planning/calendar-view';
 import { TimelineView } from '@/components/planning/timeline-view';
+import { SprintsView } from '@/components/methods/sprints-view';
 import { Board } from '@/components/tasks/board';
 import { FilterBar } from '@/components/tasks/filter-bar';
 import { TableView } from '@/components/tasks/table-view';
@@ -26,6 +27,7 @@ const VIEWS: { kind: ViewKind; icon: IconName; label: string }[] = [
   { kind: 'TABLE', icon: 'filter', label: 'views.table' },
   { kind: 'CALENDAR', icon: 'calendar', label: 'views.calendar' },
   { kind: 'TIMELINE', icon: 'clock', label: 'views.timeline' },
+  { kind: 'SPRINTS', icon: 'bolt', label: 'views.sprints' },
 ];
 
 export default function ProjectPage({ params }: { params: Promise<{ projectId: string }> }) {
@@ -131,7 +133,7 @@ export default function ProjectPage({ params }: { params: Promise<{ projectId: s
                 )}
               </span>
             ))}
-            <Button size="sm" variant="ghost" onClick={() => setSaving(true)}>
+            <Button size="sm" variant="ghost" disabled={view === 'SPRINTS'} onClick={() => setSaving(true)}>
               <Icon name="plus" size={13} /> {t('views.saveView')}
             </Button>
           </div>
@@ -164,6 +166,7 @@ export default function ProjectPage({ params }: { params: Promise<{ projectId: s
           />
         )}
         {view === 'TIMELINE' && <TimelineView tasks={filtered} />}
+        {view === 'SPRINTS' && <SprintsView projectId={projectId} tasks={filtered} />}
         {view === 'LIST' && (
           <div className="flex flex-col gap-3">
             {p.statuses.map((s) => {

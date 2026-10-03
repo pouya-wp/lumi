@@ -211,6 +211,9 @@ export class TasksService {
     const others = assigneeIds.filter((id) => id !== userId);
     const proposalState = this.proposalsEnabled(project) && others.length > 0 ? 'PROPOSED' : 'NONE';
     if (dto.recurrence && !parseRRule(dto.recurrence)) throw new BadRequestException('Invalid recurrence rule');
+    if (dto.sprintId && !(await this.prisma.sprint.count({ where: { id: dto.sprintId, projectId, state: { not: 'COMPLETED' } } }))) {
+      throw new BadRequestException('Invalid sprint');
+    }
     const customFields = dto.customFields ? await this.mergeCustomFields(project, {}, dto.customFields) : undefined;
 
     const task = await this.prisma.$transaction(async (tx) => {
@@ -232,6 +235,7 @@ export class TasksService {
           createdById: userId,
           proposalState,
           recurrence: dto.recurrence,
+          sprintId: dto.sprintId,
           customFields: customFields as Prisma.InputJsonValue | undefined,
           orderKey: rankBetween(last?.orderKey ?? null, null),
           completedAt: status.category === 'DONE' ? new Date() : null,
@@ -251,6 +255,12 @@ export class TasksService {
     const task = await this.access.task(taskId, userId, 'MEMBER');
     const { archived, customFields, ...fields } = dto;
     if (fields.recurrence && !parseRRule(fields.recurrence)) throw new BadRequestException('Invalid recurrence rule');
+    if (fields.sprintId && !(await this.prisma.sprint.count({ where: { id: fields.sprintId, projectId: task.projectId, state: { not: 'COMPLETED' } } }))) {
+      throw new BadRequestException('Invalid sprint');
+    }
+    if (fields.milestoneId && !(await this.prisma.milestone.count({ where: { id: fields.milestoneId, projectId: task.projectId } }))) {
+      throw new BadRequestException('Invalid milestone');
+    }
     const data: Prisma.TaskUncheckedUpdateInput = {
       ...fields,
       customFields: customFields
