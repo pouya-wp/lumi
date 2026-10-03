@@ -7,7 +7,12 @@ import type {
   AutomationRule,
   AutomationRun,
   PlanBlock,
+  Channel,
+  ChatMessage,
   Comment,
+  DocBrief,
+  DocDetail,
+  DocVersion,
   CustomField,
   FocusStats,
   Goal,
@@ -61,6 +66,13 @@ export const keys = {
   automationRuns: (id: string) => ['automationRuns', id] as const,
   aiStatus: ['aiStatus'] as const,
   plan: (date: string) => ['plan', date] as const,
+  docs: (wid: string) => ['docs', wid] as const,
+  doc: (id: string) => ['doc', id] as const,
+  docVersions: (id: string) => ['docVersions', id] as const,
+  meetings: (wid: string, from: string, to: string) => ['meetings', wid, from, to] as const,
+  channels: (wid: string) => ['channels', wid] as const,
+  messages: (channelId: string) => ['messages', channelId] as const,
+  thread: (id: string) => ['thread', id] as const,
 };
 
 const enabled = (...ids: (string | null | undefined)[]) => ids.every(Boolean);
@@ -98,7 +110,7 @@ export const useLabels = (wid?: string | null) =>
 export const useSearch = (wid: string | null | undefined, q: string) =>
   useQuery({
     queryKey: keys.search(wid!, q),
-    queryFn: () => get<{ tasks: Task[]; projects: Project[] }>(`/workspaces/${wid}/search?q=${encodeURIComponent(q)}`),
+    queryFn: () => get<{ tasks: Task[]; projects: Project[]; docs: DocBrief[] }>(`/workspaces/${wid}/search?q=${encodeURIComponent(q)}`),
     enabled: enabled(wid) && q.trim().length > 0,
     placeholderData: (prev) => prev,
   });
@@ -171,3 +183,22 @@ export const useAutomationRuns = (id?: string | null) =>
   useQuery({ queryKey: keys.automationRuns(id!), queryFn: () => get<AutomationRun[]>(`/automations/${id}/runs`), enabled: enabled(id) });
 export const useAiStatus = () => useQuery({ queryKey: keys.aiStatus, queryFn: () => get<{ enabled: boolean; model: string | null }>('/ai/status'), staleTime: 300_000 });
 export const usePlan = (date: string) => useQuery({ queryKey: keys.plan(date), queryFn: () => get<PlanBlock[]>(`/me/plan?date=${date}`) });
+
+export const useDocs = (wid?: string | null) =>
+  useQuery({ queryKey: keys.docs(wid!), queryFn: () => get<DocBrief[]>(`/workspaces/${wid}/docs`), enabled: enabled(wid) });
+export const useDoc = (id?: string | null) => useQuery({ queryKey: keys.doc(id!), queryFn: () => get<DocDetail>(`/docs/${id}`), enabled: enabled(id) });
+export const useDocVersions = (id?: string | null) =>
+  useQuery({ queryKey: keys.docVersions(id!), queryFn: () => get<DocVersion[]>(`/docs/${id}/versions`), enabled: enabled(id) });
+export const useMeetings = (wid: string | null | undefined, from: Date, to: Date) =>
+  useQuery({
+    queryKey: keys.meetings(wid!, from.toISOString(), to.toISOString()),
+    queryFn: () => get<DocBrief[]>(`/workspaces/${wid}/meetings?from=${from.toISOString()}&to=${to.toISOString()}`),
+    enabled: enabled(wid),
+    placeholderData: (prev) => prev,
+  });
+export const useChannels = (wid?: string | null) =>
+  useQuery({ queryKey: keys.channels(wid!), queryFn: () => get<Channel[]>(`/workspaces/${wid}/channels`), enabled: enabled(wid) });
+export const useMessages = (channelId?: string | null) =>
+  useQuery({ queryKey: keys.messages(channelId!), queryFn: () => get<ChatMessage[]>(`/channels/${channelId}/messages`), enabled: enabled(channelId) });
+export const useThread = (id?: string | null) =>
+  useQuery({ queryKey: keys.thread(id!), queryFn: () => get<{ root: ChatMessage; replies: ChatMessage[] }>(`/messages/${id}/thread`), enabled: enabled(id) });

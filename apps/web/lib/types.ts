@@ -182,7 +182,7 @@ export interface Activity {
 export interface Notification {
   id: string;
   type: string;
-  payload: { taskId?: string; title?: string; key?: string; workspaceId?: string; note?: string; excerpt?: string; status?: string; proposedDueAt?: string };
+  payload: { taskId?: string; title?: string; key?: string; workspaceId?: string; note?: string; excerpt?: string; status?: string; proposedDueAt?: string; channelId?: string };
   readAt: string | null;
   createdAt: string;
   actor: Pick<User, 'id' | 'name' | 'avatarUrl'> | null;
@@ -314,4 +314,68 @@ export interface PlanBlock {
   endAt: string;
   kind: 'task' | 'break';
   task: { id: string; title: string; priority: string; projectId: string; number: number; completedAt: string | null; project: { key: string; color: string | null; icon: string | null } } | null;
+}
+
+export interface DocBrief {
+  id: string;
+  parentId: string | null;
+  title: string;
+  icon: string | null;
+  kind: 'PAGE' | 'MEETING';
+  orderKey: string;
+  updatedAt: string;
+  meetingAt: string | null;
+  attendeeIds?: string[];
+}
+
+export interface DocDetail extends DocBrief {
+  workspaceId: string;
+  projectId: string | null;
+  cover: string | null;
+  fullWidth: boolean;
+  content: Record<string, unknown>;
+  text: string;
+  attendeeIds: string[];
+  createdById: string;
+  updatedById: string | null;
+  createdAt: string;
+  children: DocBrief[];
+  breadcrumbs: { id: string; title: string; icon: string | null }[];
+  canEdit: boolean;
+  people: { id: string; name: string }[];
+}
+
+export interface DocVersion {
+  id: string;
+  title: string;
+  content: Record<string, unknown>;
+  createdAt: string;
+  author: { id: string; name: string } | null;
+}
+
+export interface Channel {
+  id: string;
+  workspaceId: string;
+  kind: 'PUBLIC' | 'DIRECT';
+  name: string;
+  topic: string | null;
+  emoji: string | null;
+  members: UserBrief[];
+  unread: number;
+  last: ChatMessage | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  channelId: string;
+  parentId: string | null;
+  text: string;
+  author: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  reactions: Record<string, string[]> | null;
+  mentionIds: string[];
+  taskId: string | null;
+  replyCount: number;
+  createdAt: string;
+  editedAt: string | null;
+  deletedAt: string | null;
 }

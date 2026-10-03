@@ -8,6 +8,7 @@ import { useSession } from '@/lib/session';
 import { useTheme } from '@/lib/theme';
 import { useUi } from '@/lib/ui-state';
 import { cx, Icon, Kbd, PriorityGlyph, StatusDot, type IconName } from '../ui';
+import { useCreateDoc } from '../docs/use-create-doc';
 import { useAiPanel } from './ai-panel';
 import { Dialog } from '../ui/dialog';
 
@@ -48,6 +49,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const search = useSearch(workspace?.id, q);
+  const { create: createDoc } = useCreateDoc();
 
   const items = useMemo<Item[]>(() => {
     const go = (path: string) => () => {
@@ -82,6 +84,12 @@ function Palette({ onClose }: { onClose: () => void }) {
         ai.open();
       }),
       action('today', 'calendar', t('ai.planDay'), go('/today')),
+      action('docs', 'doc', t('nav2.docs'), go('/docs')),
+      action('chat', 'message', t('nav2.chat'), go('/chat')),
+      action('newDoc', 'plus', t('nav2.newDoc'), () => {
+        onClose();
+        createDoc('blank');
+      }),
     ].filter((a) => !q || String(a.label).toLowerCase().includes(q.toLowerCase()));
 
     const tasks: Item[] = (q ? (search.data?.tasks ?? []) : []).map((task) => ({
@@ -107,8 +115,15 @@ function Palette({ onClose }: { onClose: () => void }) {
       icon: <span>{p.icon ?? '◆'}</span>,
       run: go(`/projects/${p.id}`),
     }));
-    return [...tasks, ...projects, ...actions, ...askAi];
-  }, [q, search.data, t, locale, router, onClose, openQuickAdd, openTask, toggle, ai]);
+    const docs: Item[] = (q ? (search.data?.docs ?? []) : []).map((d) => ({
+      id: d.id,
+      group: t('nav2.docs'),
+      label: d.title || t('docs.untitled'),
+      icon: <span>{d.icon ?? '📄'}</span>,
+      run: go(`/docs/${d.id}`),
+    }));
+    return [...tasks, ...docs, ...projects, ...actions, ...askAi];
+  }, [q, search.data, t, locale, router, onClose, openQuickAdd, openTask, toggle, ai, createDoc]);
 
   useEffect(() => setActive(0), [q]);
   useEffect(() => {

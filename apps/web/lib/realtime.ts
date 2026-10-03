@@ -47,11 +47,19 @@ export function useRealtime(enabled: boolean) {
     const onNotification = (n: Notification) => {
       qc.invalidateQueries({ queryKey: ['notifications'] });
       qc.invalidateQueries({ queryKey: ['unread'] });
+      if (n.payload.channelId && location.pathname.includes('/app/chat')) return;
       if (n.type === 'workspace.joined') qc.invalidateQueries({ queryKey: ['workspaces'] });
       toast(t(`notif.${n.type}`, { title: n.payload.title ?? '', status: n.payload.status ?? '' }));
     };
 
+    const onChat = (e: { channelId: string; messageId: string }) => {
+      qc.invalidateQueries({ queryKey: ['messages', e.channelId] });
+      qc.invalidateQueries({ queryKey: ['channels'] });
+      qc.invalidateQueries({ queryKey: ['thread'] });
+    };
+
     socket.on('task', onTask);
+    socket.on('chat', onChat);
     socket.on('comment', onComment);
     socket.on('project', onProject);
     socket.on('notification', onNotification);

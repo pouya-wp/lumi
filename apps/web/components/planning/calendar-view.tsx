@@ -5,7 +5,9 @@ import { useState, type DragEvent } from 'react';
 import { dayNumber, monthGrid, monthOf, monthTitle, sameDay, shiftMonth, startOfDay, weekdayNames, firstOfMonth, type MonthRef } from '@/lib/calendar';
 import { num, useT } from '@/lib/i18n-client';
 import { useUi } from '@/lib/ui-state';
-import type { Task } from '@/lib/types';
+import Link from 'next/link';
+import { formatTime } from '@/lib/format';
+import type { DocBrief, Task } from '@/lib/types';
 import { Avatar, Button, cx, Icon, IconButton, PriorityGlyph } from '../ui';
 
 /** Month grid in the locale's calendar; drag a task chip onto a day to reschedule it. */
@@ -16,6 +18,7 @@ export function CalendarView({
   onReschedule,
   onCreate,
   showProject,
+  meetings = [],
 }: {
   tasks: Task[];
   month: MonthRef;
@@ -23,6 +26,7 @@ export function CalendarView({
   onReschedule: (task: Task, day: Date) => void;
   onCreate?: (day: Date) => void;
   showProject?: boolean;
+  meetings?: DocBrief[];
 }) {
   const { t, locale } = useT();
   const { openTask } = useUi();
@@ -37,6 +41,13 @@ export function CalendarView({
     if (!task.dueAt) continue;
     const key = startOfDay(new Date(task.dueAt)).toDateString();
     byDay.set(key, [...(byDay.get(key) ?? []), task]);
+  }
+
+  const meetingsByDay = new Map<string, DocBrief[]>();
+  for (const m of meetings) {
+    if (!m.meetingAt) continue;
+    const key = startOfDay(new Date(m.meetingAt)).toDateString();
+    meetingsByDay.set(key, [...(meetingsByDay.get(key) ?? []), m]);
   }
 
   const drop = (e: DragEvent, day: Date) => {
@@ -109,6 +120,17 @@ export function CalendarView({
                 )}
               </div>
               <div className="flex flex-col gap-1">
+                {(meetingsByDay.get(key) ?? []).map((m) => (
+                  <Link
+                    key={m.id}
+                    href={`/${locale}/app/docs/${m.id}`}
+                    className="flex items-center gap-1.5 truncate rounded-[8px] bg-ink px-1.5 py-1 text-[11px] text-on-ink transition hover:-translate-y-px"
+                  >
+                    <span>{m.icon ?? '🗓️'}</span>
+                    <span className="truncate">{m.title}</span>
+                    <span className="ms-auto text-[9px] opacity-60 tabular-nums">{formatTime(m.meetingAt!, locale)}</span>
+                  </Link>
+                ))}
                 {items.slice(0, 4).map((task) => (
                   <button
                     key={task.id}

@@ -5,14 +5,14 @@ import { CalendarView } from '@/components/planning/calendar-view';
 import { Panel, Segmented } from '@/components/ui';
 import { addDays, monthGrid, monthOf } from '@/lib/calendar';
 import { useT } from '@/lib/i18n-client';
-import { useProjects, useRangeTasks } from '@/lib/queries';
+import { useMeetings, useProjects, useRangeTasks } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { useTaskActions } from '@/lib/task-actions';
 import { useUi } from '@/lib/ui-state';
 
 export default function WorkspaceCalendarPage() {
   const { t, locale } = useT();
-  const { workspace } = useSession();
+  const { workspace, user } = useSession();
   const { openQuickAdd } = useUi();
   const actions = useTaskActions();
   const projects = useProjects(workspace?.id).data ?? [];
@@ -22,6 +22,7 @@ export default function WorkspaceCalendarPage() {
   const grid = monthGrid(month, locale);
   const extra = `${scope === 'me' ? '&assigneeId=me' : ''}${projectId ? `&projectId=${projectId}` : ''}&includeDone=true`;
   const tasks = useRangeTasks(workspace?.id, grid[0], addDays(grid[41], 1), extra);
+  const meetings = useMeetings(workspace?.id, grid[0], addDays(grid[41], 1)).data ?? [];
   const list = useMemo(() => tasks.data ?? [], [tasks.data]);
 
   return (
@@ -46,6 +47,7 @@ export default function WorkspaceCalendarPage() {
         month={month}
         onMonthChange={setMonth}
         showProject
+        meetings={scope === 'all' || !workspace ? meetings : meetings.filter((m) => m.attendeeIds?.includes(user?.id ?? ''))}
         onReschedule={(task, day) => {
           const prev = task.dueAt ? new Date(task.dueAt) : null;
           const next = new Date(day);
