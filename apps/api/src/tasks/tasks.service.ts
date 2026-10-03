@@ -146,9 +146,9 @@ export class TasksService {
   async search(workspaceId: string, userId: string, term: string) {
     await this.access.membership(workspaceId, userId);
     const q = term.trim();
-    if (!q) return { tasks: [], projects: [] };
+    if (!q) return { tasks: [], projects: [], docs: [] };
     const keyMatch = /^([A-Za-z][A-Za-z0-9]*)-(\d+)$/.exec(q);
-    const [tasks, projects] = await Promise.all([
+    const [tasks, projects, docs] = await Promise.all([
       this.prisma.task.findMany({
         where: {
           deletedAt: null,
@@ -166,8 +166,14 @@ export class TasksService {
         where: { workspaceId, archivedAt: null, name: { contains: q, mode: 'insensitive' } },
         take: 5,
       }),
+      this.prisma.doc.findMany({
+        where: { workspaceId, archivedAt: null, OR: [{ title: { contains: q, mode: 'insensitive' } }, { text: { contains: q, mode: 'insensitive' } }] },
+        select: { id: true, title: true, icon: true, kind: true },
+        take: 6,
+        orderBy: { updatedAt: 'desc' },
+      }),
     ]);
-    return { tasks: tasks.map(serializeTask), projects };
+    return { tasks: tasks.map(serializeTask), projects, docs };
   }
 
   async get(taskId: string, userId: string) {

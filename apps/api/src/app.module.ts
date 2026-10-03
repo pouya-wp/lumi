@@ -7,6 +7,8 @@ import { ActivityModule } from './activity/activity.module';
 import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
 import { AutomationsModule } from './automations/automations.module';
+import { ChatModule } from './chat/chat.module';
+import { DocsModule } from './docs/docs.module';
 import { CommentsModule } from './comments/comments.module';
 import { AuthGuard } from './common/auth.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -57,6 +59,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     FocusModule,
     AutomationsModule,
     AiModule,
+    DocsModule,
+    ChatModule,
     ActivityModule,
     RealtimeModule,
   ],
