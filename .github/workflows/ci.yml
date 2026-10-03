@@ -30,6 +30,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo run build typecheck test
 
+  docker:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: false
+          cache-from: type=gha,scope=${{ matrix.app }}
+
   mobile:
     runs-on: ubuntu-latest
     defaults:

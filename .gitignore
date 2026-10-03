@@ -13,3 +13,4 @@ apps/mobile/.dart_tool/
 apps/mobile/build/
 apps/mobile/.flutter-plugins*
 *.tsbuildinfo
+deploy/backups/

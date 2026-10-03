@@ -1072,6 +1072,19 @@
       "skipped": "{n} rows skipped",
       "columns": "Detected columns",
       "errors": "Errors"
+    },
+    "account": {
+      "title": "My account",
+      "hint": "Name, language, calendar and password",
+      "name": "Name",
+      "password": "Change password",
+      "current": "Current password",
+      "new": "New password (8+ characters)",
+      "saved": "Saved",
+      "changed": "Password changed; other devices were signed out",
+      "calendar": "Calendar",
+      "jalali": "Jalali",
+      "gregorian": "Gregorian"
     }
   }
 }

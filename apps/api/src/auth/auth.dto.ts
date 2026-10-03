@@ -24,3 +24,8 @@ export class UpdateMeDto {
   @IsOptional() @IsString() timezone?: string;
   @IsOptional() @IsString() avatarUrl?: string;
 }
+
+export class ChangePasswordDto {
+  @IsString() currentPassword!: string;
+  @IsString() @MinLength(8) @MaxLength(128) newPassword!: string;
+}

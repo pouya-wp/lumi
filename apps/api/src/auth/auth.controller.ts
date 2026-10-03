@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpCode, Patch, Post } from '@nestjs/common';
 import { CurrentUser, Public, type AuthUser } from '../common/decorators';
-import { LoginDto, RefreshDto, RegisterDto, UpdateMeDto } from './auth.dto';
+import { ChangePasswordDto, LoginDto, RefreshDto, RegisterDto, UpdateMeDto } from './auth.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
@@ -30,6 +30,11 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: AuthUser) {
     return this.auth.me(user.id);
+  }
+
+  @Post('password') @HttpCode(200)
+  changePassword(@CurrentUser() user: AuthUser, @Body() dto: ChangePasswordDto) {
+    return this.auth.changePassword(user.id, dto);
   }
 
   @Patch('me')

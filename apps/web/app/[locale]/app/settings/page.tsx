@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Button, cx, Empty, Icon, IconButton, Input, Panel, Pill, Spinner } from '@/components/ui';
-import { del, get, patch, post } from '@/lib/api';
+import { del, get, patch, post, tokens } from '@/lib/api';
 import { timeAgo } from '@/lib/format';
 import { num, useT } from '@/lib/i18n-client';
 import { useProjects } from '@/lib/queries';
@@ -106,6 +106,7 @@ export default function SettingsPage() {
           ))}
         </div>
       </Panel>
+      <AccountSection />
       <ImportSection />
       <TelegramSection o={o} />
       <GithubSection o={o} />
@@ -603,6 +604,71 @@ function ImportSection() {
           )}
         </div>
       )}
+    </Section>
+  );
+}
+
+function AccountSection() {
+  const { t } = useT();
+  const { user } = useSession();
+  const qc = useQueryClient();
+  const toast = useToast();
+  const [name, setName] = useState(user?.name ?? '');
+  const [current, setCurrent] = useState('');
+  const [next, setNext] = useState('');
+  const save = async (body: Record<string, unknown>) => {
+    await patch('/auth/me', body);
+    qc.invalidateQueries({ queryKey: ['me'] });
+    toast(t('integ.account.saved'), '✓');
+  };
+  const changePassword = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await post<{ accessToken: string; refreshToken: string }>('/auth/password', { currentPassword: current, newPassword: next });
+      tokens.set(res.accessToken, res.refreshToken);
+      setCurrent('');
+      setNext('');
+      toast(t('integ.account.changed'), '🔒');
+    } catch (err) {
+      toast((err as Error).message, '⚠️');
+    }
+  };
+  if (!user) return null;
+  return (
+    <Section emoji="👤" title={t('integ.account.title')} hint={t('integ.account.hint')} tone="#4F5BFF">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-2">
+          <label className="text-[11px] text-muted">{t('integ.account.name')}</label>
+          <div className="flex gap-2">
+            <Input value={name} onChange={(e) => setName(e.target.value)} maxLength={60} />
+            <Button variant="ink" disabled={name.trim().length < 2 || name === user.name} onClick={() => save({ name: name.trim() })}>
+              {t('integ.save')}
+            </Button>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(['fa', 'en'] as const).map((l) => (
+              <Button key={l} size="sm" variant={user.locale === l ? 'ink' : 'soft'} onClick={() => save({ locale: l })}>
+                {l === 'fa' ? 'فارسی' : 'English'}
+              </Button>
+            ))}
+            {(['jalali', 'gregorian'] as const).map((c) => (
+              <Button key={c} size="sm" variant={user.calendar === c ? 'ink' : 'soft'} onClick={() => save({ calendar: c })}>
+                {t(`integ.account.${c}`)}
+              </Button>
+            ))}
+          </div>
+        </div>
+        <form onSubmit={changePassword} className="flex flex-col gap-2">
+          <label className="text-[11px] text-muted">{t('integ.account.password')}</label>
+          <Input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} placeholder={t('integ.account.current')} autoComplete="current-password" />
+          <div className="flex gap-2">
+            <Input type="password" value={next} onChange={(e) => setNext(e.target.value)} placeholder={t('integ.account.new')} autoComplete="new-password" minLength={8} />
+            <Button type="submit" variant="ink" disabled={!current || next.length < 8}>
+              {t('integ.save')}
+            </Button>
+          </div>
+        </form>
+      </div>
     </Section>
   );
 }

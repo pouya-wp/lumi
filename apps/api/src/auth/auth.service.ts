@@ -1,10 +1,10 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { createHash, randomBytes } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkspacesService } from '../workspaces/workspaces.service';
-import { LoginDto, RegisterDto, UpdateMeDto } from './auth.dto';
+import { ChangePasswordDto, LoginDto, RegisterDto, UpdateMeDto } from './auth.dto';
 
 const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -23,6 +23,10 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const email = dto.email.toLowerCase();
     if (await this.prisma.user.findUnique({ where: { email } })) throw new ConflictException('Email already registered');
+    // Private deployments: only people with a pending invite may sign up.
+    if (process.env.ALLOW_SIGNUP === 'false' && !(await this.prisma.invite.count({ where: { email, acceptedAt: null } }))) {
+      throw new ForbiddenException('Sign-up is invite-only');
+    }
 
     const user = await this.prisma.user.create({
       data: { email, name: dto.name, locale: dto.locale ?? 'fa', passwordHash: await bcrypt.hash(dto.password, 10) },
@@ -57,6 +61,15 @@ export class AuthService {
       where: { tokenHash: sha256(refreshToken), revokedAt: null },
       data: { revokedAt: new Date() },
     });
+  }
+
+  /** Changes the password and signs out every other session. */
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
+    if (!user.passwordHash || !(await bcrypt.compare(dto.currentPassword, user.passwordHash))) throw new BadRequestException('Current password is wrong');
+    await this.prisma.user.update({ where: { id: userId }, data: { passwordHash: await bcrypt.hash(dto.newPassword, 10) } });
+    await this.prisma.refreshToken.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } });
+    return this.issueTokens(userId);
   }
 
   me(userId: string) {

@@ -1,0 +1,78 @@
+# Production stack: Caddy (automatic HTTPS) → web + API, PostgreSQL, nightly backups.
+# Usage: cp .env.example .env && edit, then `docker compose up -d`. See docs/DEPLOYMENT.md.
+name: lumi
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lumi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: lumi
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumi"]
+      interval: 5s
+      retries: 20
+
+  api:
+    image: ${LUMI_API_IMAGE:-ghcr.io/pouya-wp/lumi-api:latest}
+    build: { context: .., dockerfile: apps/api/Dockerfile }
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql://lumi:${POSTGRES_PASSWORD}@postgres:5432/lumi
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      PUBLIC_API_URL: https://${LUMI_DOMAIN}
+      PUBLIC_WEB_URL: https://${LUMI_DOMAIN}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      TEAM_EMAILS: ${TEAM_EMAILS:-}
+
+  web:
+    image: ${LUMI_WEB_IMAGE:-ghcr.io/pouya-wp/lumi-web:latest}
+    build: { context: .., dockerfile: apps/web/Dockerfile }
+    restart: unless-stopped
+    depends_on: [api]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on: [web, api]
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      LUMI_DOMAIN: ${LUMI_DOMAIN:?set LUMI_DOMAIN in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes: [./backups:/backups]
+    # Daily compressed dump; old files are pruned after KEEP_DAYS.
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          f=/backups/lumi-$$(date +%Y%m%d-%H%M).sql.gz
+          pg_dump -h postgres -U lumi lumi | gzip > "$$f" && echo "backup $$f"
+          find /backups -name 'lumi-*.sql.gz' -mtime +$$KEEP_DAYS -delete
+          sleep 86400
+        done
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
