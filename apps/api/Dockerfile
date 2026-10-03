@@ -9,12 +9,13 @@ RUN pnpm install --frozen-lockfile --filter @lumi/api...
 COPY packages/shared packages/shared
 COPY apps/api apps/api
 RUN pnpm --filter @lumi/shared build && pnpm --filter @lumi/api build
+# Production-only node_modules with @lumi/shared copied in, then regenerate the Prisma client there.
+RUN pnpm --filter @lumi/api deploy --prod --legacy /out && cd /out && node_modules/.bin/prisma generate
 
 FROM node:22-alpine
-ENV NODE_ENV=production PORT=4000
-WORKDIR /repo
-COPY --from=build /repo /repo
-WORKDIR /repo/apps/api
+ENV NODE_ENV=production PORT=4000 NODE_OPTIONS=--max-old-space-size=256
+WORKDIR /app
+COPY --from=build /out /app
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s CMD node -e "fetch('http://127.0.0.1:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
 # Apply pending migrations, then serve.

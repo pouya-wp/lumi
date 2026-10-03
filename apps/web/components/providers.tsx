@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type fa from '../messages/fa.json';
 import { I18nProvider } from '@/lib/i18n-client';
 import type { Locale } from '@/lib/i18n';
@@ -13,6 +13,10 @@ export function Providers({ locale, dict, children }: { locale: Locale; dict: ty
   const [client] = useState(
     () => new QueryClient({ defaultOptions: { queries: { staleTime: 15_000, refetchOnWindowFocus: true, retry: 1 } } }),
   );
+  // Installable PWA: register the app-shell service worker in production builds only.
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+  }, []);
   return (
     <QueryClientProvider client={client}>
       <I18nProvider locale={locale} dict={dict}>

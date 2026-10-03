@@ -37,11 +37,32 @@ jobs:
         with:
           context: .
           file: apps/${{ matrix.app }}/Dockerfile
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  # Servers in Iran cannot pull from Docker Hub, so the third-party images the VPS stack needs are
+  # mirrored next to Lumi's own images on GHCR.
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Mirror postgres and cloudflared
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          mirror() {
+            docker buildx imagetools create -t "ghcr.io/$owner/$2" "$1"
+          }
+          mirror postgres:16-alpine lumi-postgres:16
+          mirror cloudflare/cloudflared:latest lumi-cloudflared:latest
 
   android:
     runs-on: ubuntu-latest
@@ -49,8 +70,8 @@ jobs:
       run:
         working-directory: apps/mobile
     env:
-      # Repository variable, e.g. https://lumi.beyondex.io (Settings → Secrets and variables → Actions → Variables).
-      API_URL: ${{ vars.LUMI_API_URL }}
+      # Override with the LUMI_API_URL repository variable (Settings → Secrets and variables → Actions → Variables).
+      API_URL: ${{ vars.LUMI_API_URL || 'https://lumi-api.beyondex.one' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -88,7 +109,7 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [images, android]
+    needs: [images, mirror, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

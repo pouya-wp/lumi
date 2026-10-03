@@ -36,7 +36,7 @@ export default function ArenaPage() {
       <section className="night rise relative overflow-hidden rounded-[var(--radius-panel)] p-6 text-white md:p-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_80%_at_50%_120%,rgb(79_91_255/.45),transparent_70%),radial-gradient(40%_60%_at_90%_0%,rgb(249_115_22/.25),transparent_70%)]" />
         <div className="relative flex flex-wrap items-start gap-4">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 basis-56">
             <p className="text-[11px] tracking-[0.2em] text-white/50 uppercase">{t('game.leaderboard')}</p>
             <h1 className="mt-2 text-3xl font-semibold md:text-4xl">{t('game.title')}</h1>
             <p className="mt-2 max-w-md text-sm text-white/60">{t('game.subtitle')}</p>

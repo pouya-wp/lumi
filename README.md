@@ -41,6 +41,9 @@ pnpm dev   # api: http://localhost:4000 (Swagger: /api/docs) · web: http://loca
 موبایل: [apps/mobile/README.md](apps/mobile/README.md)
 
 ## انتشار
+حالت فعلی تیم (API روی VPS + وب روی Vercel): [deploy/vps/README.md](deploy/vps/README.md)
+
+سرور اختصاصی (همه‌چیز با Docker):
 ```bash
 cd deploy && cp .env.example .env   # دامنه و رمزها
 docker compose up -d
