@@ -102,6 +102,20 @@ model Workspace {
   projects    Project[]
   labels      Label[]
   activities  Activity[]
+  invites     Invite[]
+}
+
+model Invite {
+  id          String    @id @default(cuid())
+  workspaceId String
+  email       String
+  role        Role      @default(MEMBER)
+  invitedById String
+  acceptedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, email])
 }
 
 model Membership {
@@ -174,6 +188,8 @@ model Task {
   recurrence    String?
   createdById   String
   proposalState ProposalState @default(NONE)
+  proposedDueAt DateTime?
+  proposalNote  String?
   customFields  Json?
   orderKey      String
   completedAt   DateTime?

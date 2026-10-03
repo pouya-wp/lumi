@@ -8,6 +8,18 @@ on:
 jobs:
   js:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: lumi
+          POSTGRES_PASSWORD: lumi
+          POSTGRES_DB: lumi_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U lumi" --health-interval 5s --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgresql://lumi:lumi@localhost:5432/lumi_test
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

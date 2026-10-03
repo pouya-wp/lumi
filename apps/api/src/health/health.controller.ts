@@ -1,8 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
+import { Public } from '../common/decorators';
 
 @Controller('health')
 export class HealthController {
-  @Get()
+  @Public() @Get()
   check() {
     return { status: 'ok', service: 'lumi-api', time: new Date().toISOString() };
   }
