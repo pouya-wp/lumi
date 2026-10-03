@@ -86,6 +86,9 @@ function Palette({ onClose }: { onClose: () => void }) {
       action('today', 'calendar', t('ai.planDay'), go('/today')),
       action('docs', 'doc', t('nav2.docs'), go('/docs')),
       action('chat', 'message', t('nav2.chat'), go('/chat')),
+      action('reports', 'bolt', t('nav2.reports'), go('/reports')),
+      action('arena', 'flag', t('nav2.arena'), go('/arena')),
+      action('settings', 'settings', t('nav2.settings'), go('/settings')),
       action('newDoc', 'plus', t('nav2.newDoc'), () => {
         onClose();
         createDoc('blank');

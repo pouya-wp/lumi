@@ -139,6 +139,9 @@ export function Sidebar() {
               </p>
             )}
           </div>
+          <Link href={`${base}/settings`} onClick={() => setNavOpen(false)} aria-label={t('nav2.settings')} className="grid size-8 place-items-center rounded-full text-ink-2 hover:bg-sunken">
+            <Icon name="settings" size={17} />
+          </Link>
           <IconButton icon="logout" label={t('auth.logout')} onClick={signOut} className="size-8" />
         </div>
       </div>

@@ -1002,5 +1002,76 @@
     "chat": {
       "newDm": "پیام جدید"
     }
+  },
+  "integ": {
+    "title": "تنظیمات و یکپارچه‌سازی",
+    "subtitle": "لومی رو به ابزارهای تیم وصل کن — گیت‌هاب، تلگرام، تقویم و API.",
+    "copy": "کپی",
+    "copied": "کپی شد",
+    "rotate": "توکن جدید",
+    "connect": "اتصال",
+    "disconnect": "قطع اتصال",
+    "connected": "وصل",
+    "notConnected": "وصل نیست",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "adminOnly": "فقط ادمین‌ها می‌تونن این بخش رو تنظیم کنن",
+    "keys": {
+      "title": "کلیدهای API",
+      "hint": "برای اسکریپت‌ها و CI؛ هر کلید به‌جای تو و فقط در همین فضای کاری عمل می‌کنه.",
+      "name": "اسم کلید (مثلاً CI)",
+      "create": "ساخت کلید",
+      "once": "این کلید فقط همین یک بار نمایش داده می‌شه — الان کپی‌اش کن.",
+      "lastUsed": "آخرین استفاده {when}",
+      "never": "هنوز استفاده نشده",
+      "revoke": "باطل کردن",
+      "example": "نمونه"
+    },
+    "hooks": {
+      "title": "وب‌هوک‌ها",
+      "hint": "برای هر رویداد یک POST امضاشده (HMAC-SHA256) به آدرس تو فرستاده می‌شه.",
+      "url": "https://example.com/lumi-webhook",
+      "add": "افزودن وب‌هوک",
+      "events": "رویدادها",
+      "secret": "کلید امضا",
+      "ping": "تست",
+      "active": "فعال",
+      "deliveries": "ارسال‌های اخیر",
+      "none": "هنوز وب‌هوکی نساختی"
+    },
+    "github": {
+      "title": "گیت‌هاب",
+      "hint": "کامیت‌ها و PRهایی که کلید تسک (مثل APP-12) دارن به تسک لینک می‌شن؛ «fixes APP-12» تسک رو می‌بنده.",
+      "steps": "در مخزن: Settings → Webhooks → Add webhook، این آدرس و کلید رو بذار، Content type رو application/json و رویدادهای Push و Pull requests رو انتخاب کن.",
+      "payload": "Payload URL",
+      "secret": "Secret"
+    },
+    "telegram": {
+      "title": "ربات تلگرام",
+      "hint": "هر پیام به ربات یک تسک می‌سازه، /today کارهای امروز رو می‌ده و اعلان‌هات به تلگرام میاد.",
+      "token": "توکن ربات از @BotFather",
+      "project": "پروژه‌ی پیش‌فرض",
+      "link": "وصل کردن تلگرام من",
+      "linked": "تلگرامت وصله ✅",
+      "open": "باز کردن در تلگرام",
+      "webhookError": "ربات وصل شد ولی وب‌هوک تنظیم نشد (آدرس عمومی HTTPS لازمه): {error}"
+    },
+    "ical": {
+      "title": "فید تقویم (iCal)",
+      "hint": "تسک‌های تاریخ‌دار و جلسه‌هات رو در Google Calendar یا Apple Calendar ببین. این لینک خصوصیه.",
+      "how": "در Google Calendar: Other calendars → From URL"
+    },
+    "import": {
+      "title": "ورود از CSV",
+      "hint": "از Jira، Trello، Asana، ClickUp یا اکسل — ستون‌ها خودکار تشخیص داده می‌شن.",
+      "pick": "انتخاب فایل CSV",
+      "project": "به پروژه",
+      "preview": "پیش‌نمایش",
+      "run": "ورود {n} تسک",
+      "done": "{n} تسک وارد شد",
+      "skipped": "{n} ردیف رد شد",
+      "columns": "ستون‌های شناسایی‌شده",
+      "errors": "خطاها"
+    }
   }
 }

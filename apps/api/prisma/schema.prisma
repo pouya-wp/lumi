@@ -716,3 +716,83 @@ model Achievement {
   @@unique([workspaceId, userId, key])
   @@index([workspaceId])
 }
+
+/// Personal access key for the public API; only a SHA-256 hash is stored.
+model ApiKey {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  name        String
+  prefix      String
+  hash        String    @unique
+  lastUsedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([workspaceId])
+}
+
+/// Outgoing webhook: POSTs signed JSON for the selected domain events.
+model Webhook {
+  id          String            @id @default(cuid())
+  workspaceId String
+  url         String
+  secret      String
+  events      String[]
+  active      Boolean           @default(true)
+  createdById String
+  createdAt   DateTime          @default(now())
+  deliveries  WebhookDelivery[]
+
+  @@index([workspaceId])
+}
+
+model WebhookDelivery {
+  id         String   @id @default(cuid())
+  webhookId  String
+  event      String
+  status     Int?
+  ok         Boolean
+  durationMs Int
+  error      String?
+  createdAt  DateTime @default(now())
+  webhook    Webhook  @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId, createdAt])
+}
+
+/// Per-workspace connection to an external service ("github" | "telegram"); secrets live in config.
+model Integration {
+  id          String   @id @default(cuid())
+  workspaceId String
+  kind        String
+  config      Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([workspaceId, kind])
+}
+
+/// Links a member to a Telegram chat; `code` is the one-time /start code until linked.
+model TelegramLink {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  code        String    @unique
+  chatId      String?
+  linkedAt    DateTime?
+
+  @@unique([workspaceId, userId])
+  @@index([chatId])
+}
+
+/// Secret token behind a member's private iCal feed URL.
+model CalendarFeed {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  token       String   @unique
+  createdAt   DateTime @default(now())
+
+  @@unique([workspaceId, userId])
+}

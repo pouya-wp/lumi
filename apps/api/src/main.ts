@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import { setupApp } from './setup-app';
 
 async function bootstrap() {
-  const app = setupApp(await NestFactory.create(AppModule, { cors: true }));
+  const app = setupApp(await NestFactory.create(AppModule, { cors: true, rawBody: true }));
 
   const config = new DocumentBuilder().setTitle('Lumi API').setVersion('0.1').addBearerAuth().build();
   SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));

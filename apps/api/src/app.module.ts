@@ -21,6 +21,7 @@ import { SprintsModule } from './sprints/sprints.module';
 import { TimeModule } from './time/time.module';
 import { ViewsModule } from './views/views.module';
 import { HealthModule } from './health/health.module';
+import { IntegrationsModule } from './integrations/integrations.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -63,6 +64,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     DocsModule,
     ChatModule,
     ReportsModule,
+    IntegrationsModule,
     ActivityModule,
     RealtimeModule,
   ],
