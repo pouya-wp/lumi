@@ -14,6 +14,7 @@ import { useUi } from '@/lib/ui-state';
 import type { Member, Status, TaskDetail } from '@/lib/types';
 import { Avatar, AvatarStack, Button, CheckCircle, cx, Icon, IconButton, Pill, PriorityGlyph, Segmented, Spinner, StatusDot, Textarea } from '../ui';
 import { DatePicker } from '../ui/date-picker';
+import { CustomFieldsSection, DependenciesSection, RecurrencePicker, TimeSection } from './drawer-extras';
 import { Dialog } from '../ui/dialog';
 
 export function TaskDrawer() {
@@ -132,6 +133,9 @@ function DrawerBody({ taskId }: { taskId: string }) {
               trigger={<DueChip value={data.dueAt} />}
             />
           </Prop>
+          <Prop label={t('recur.title')}>
+            <RecurrencePicker task={data} />
+          </Prop>
           <Prop label={t('task.estimate')}>
             <input
               type="number"
@@ -158,6 +162,8 @@ function DrawerBody({ taskId }: { taskId: string }) {
           )}
         </div>
 
+        <CustomFieldsSection task={data} />
+
         <Section title={t('task.description')}>
           <Textarea
             key={data.updatedAt}
@@ -172,6 +178,8 @@ function DrawerBody({ taskId }: { taskId: string }) {
 
         <Checklist task={data} />
         <Subtasks task={data} statuses={statuses} />
+        <DependenciesSection task={data} />
+        <TimeSection task={data} />
         <Conversation task={data} members={members} />
         <p className="mt-8 text-xs text-muted">
           {t('task.createdBy', { name: data.createdBy.name })} · {formatDate(data.createdAt, locale, { day: 'numeric', month: 'long', year: 'numeric' })}

@@ -5,6 +5,9 @@ import { get } from './api';
 import type {
   Activity,
   Comment,
+  CustomField,
+  SavedView,
+  TimeEntry,
   Dashboard,
   Label,
   Notification,
@@ -32,6 +35,12 @@ export const keys = {
   activity: (taskId: string) => ['activity', taskId] as const,
   labels: (wid: string) => ['labels', wid] as const,
   search: (wid: string, q: string) => ['search', wid, q] as const,
+  fields: (projectId: string) => ['fields', projectId] as const,
+  views: (projectId: string) => ['views', projectId] as const,
+  range: (wid: string, from: string, to: string, extra: string) => ['range', wid, from, to, extra] as const,
+  timer: ['timer'] as const,
+  taskTime: (taskId: string) => ['taskTime', taskId] as const,
+  timesheet: (wid: string, from: string, to: string, userId: string) => ['timesheet', wid, from, to, userId] as const,
 };
 
 const enabled = (...ids: (string | null | undefined)[]) => ids.every(Boolean);
@@ -71,5 +80,40 @@ export const useSearch = (wid: string | null | undefined, q: string) =>
     queryKey: keys.search(wid!, q),
     queryFn: () => get<{ tasks: Task[]; projects: Project[] }>(`/workspaces/${wid}/search?q=${encodeURIComponent(q)}`),
     enabled: enabled(wid) && q.trim().length > 0,
+    placeholderData: (prev) => prev,
+  });
+
+export const useFields = (projectId?: string | null) =>
+  useQuery({ queryKey: keys.fields(projectId!), queryFn: () => get<CustomField[]>(`/projects/${projectId}/fields`), enabled: enabled(projectId) });
+export const useViews = (projectId?: string | null) =>
+  useQuery({ queryKey: keys.views(projectId!), queryFn: () => get<SavedView[]>(`/projects/${projectId}/views`), enabled: enabled(projectId) });
+
+/** Workspace tasks scheduled in [from, to); `extra` is a query string such as "&assigneeId=me". */
+export const useRangeTasks = (wid: string | null | undefined, from: Date, to: Date, extra = '') =>
+  useQuery({
+    queryKey: keys.range(wid!, from.toISOString(), to.toISOString(), extra),
+    queryFn: () => get<Task[]>(`/workspaces/${wid}/tasks?from=${from.toISOString()}&to=${to.toISOString()}${extra}`),
+    enabled: enabled(wid),
+    placeholderData: (prev) => prev,
+  });
+
+export const useTimer = () =>
+  useQuery({
+    queryKey: keys.timer,
+    queryFn: async () => {
+      const t = await get<TimeEntry | Record<string, never> | null>('/me/timer');
+      return t && 'id' in t ? (t as TimeEntry) : null;
+    },
+  });
+export const useTaskTime = (taskId?: string | null) =>
+  useQuery({ queryKey: keys.taskTime(taskId!), queryFn: () => get<{ total: number; entries: TimeEntry[] }>(`/tasks/${taskId}/time`), enabled: enabled(taskId) });
+export const useTimesheet = (wid: string | null | undefined, from: Date, to: Date, userId = '') =>
+  useQuery({
+    queryKey: keys.timesheet(wid!, from.toISOString(), to.toISOString(), userId),
+    queryFn: () =>
+      get<{ entries: TimeEntry[]; totals: { byDay: Record<string, number>; byUser: Record<string, number>; byProject: Record<string, number>; total: number } }>(
+        `/workspaces/${wid}/timesheet?from=${from.toISOString()}&to=${to.toISOString()}${userId ? `&userId=${userId}` : ''}`,
+      ),
+    enabled: enabled(wid),
     placeholderData: (prev) => prev,
   });

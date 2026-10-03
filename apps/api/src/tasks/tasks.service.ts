@@ -1,11 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { rankBetween } from '@lumi/shared';
-import { Prisma, type AssigneeRole, type Project, type Task } from '@prisma/client';
+import { nextOccurrence, parseRRule, rankBetween } from '@lumi/shared';
+import { Prisma, type AssigneeRole, type Project, type StatusCategory, type Task } from '@prisma/client';
 import { AccessService } from '../common/access.service';
 import { Events, type TaskEvent } from '../common/events';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { coerceFieldValue } from '../fields/fields.service';
 import {
   ChecklistCreateDto,
   ChecklistUpdateDto,
@@ -15,6 +16,7 @@ import {
   MoveTaskDto,
   MyTasksQuery,
   ProposalDto,
+  RangeTasksQuery,
   SetAssigneesDto,
   UpdateTaskDto,
 } from './tasks.dto';
@@ -29,6 +31,7 @@ export const taskListInclude = {
   assignees: { include: { user: { select: userBrief } } },
   labels: { include: { label: true } },
   checklist: { select: { done: true } },
+  dependencies: { select: { toTaskId: true, type: true } },
   _count: { select: { subtasks: { where: { deletedAt: null } }, comments: true, attachments: true } },
 } satisfies Prisma.TaskInclude;
 
@@ -69,8 +72,35 @@ export class TasksService {
       ...(q.includeSubtasks === 'true' ? {} : { parentId: q.parentId ?? null }),
       ...(q.assigneeId ? { assignees: { some: { userId: q.assigneeId === 'me' ? userId : q.assigneeId, role: 'ASSIGNEE' } } } : {}),
       ...(q.q ? { title: { contains: q.q, mode: 'insensitive' } } : {}),
+      ...(q.labelId ? { labels: { some: { labelId: q.labelId } } } : {}),
+      ...(q.categories ? { status: { category: { in: q.categories.split(',') as StatusCategory[] } } } : {}),
     };
     const tasks = await this.prisma.task.findMany({ where, include: taskListInclude, orderBy: { orderKey: 'asc' } });
+    return tasks.map(serializeTask);
+  }
+
+  async range(workspaceId: string, userId: string, q: RangeTasksQuery) {
+    await this.access.membership(workspaceId, userId);
+    const from = new Date(q.from);
+    const to = new Date(q.to);
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        deletedAt: null,
+        archivedAt: null,
+        project: { workspaceId, archivedAt: null },
+        projectId: q.projectId,
+        ...(q.assigneeId ? { assignees: { some: { userId: q.assigneeId === 'me' ? userId : q.assigneeId, role: 'ASSIGNEE' } } } : {}),
+        ...(q.includeDone === 'true' ? {} : { status: { category: { notIn: ['DONE', 'CANCELED'] } } }),
+        OR: [
+          { dueAt: { gte: from, lt: to } },
+          { startAt: { gte: from, lt: to } },
+          { startAt: { lt: from }, dueAt: { gte: to } },
+        ],
+      },
+      include: taskListInclude,
+      orderBy: [{ startAt: { sort: 'asc', nulls: 'last' } }, { dueAt: 'asc' }],
+      take: 1000,
+    });
     return tasks.map(serializeTask);
   }
 
@@ -180,6 +210,8 @@ export class TasksService {
 
     const others = assigneeIds.filter((id) => id !== userId);
     const proposalState = this.proposalsEnabled(project) && others.length > 0 ? 'PROPOSED' : 'NONE';
+    if (dto.recurrence && !parseRRule(dto.recurrence)) throw new BadRequestException('Invalid recurrence rule');
+    const customFields = dto.customFields ? await this.mergeCustomFields(project, {}, dto.customFields) : undefined;
 
     const task = await this.prisma.$transaction(async (tx) => {
       const { taskCounter } = await tx.project.update({ where: { id: projectId }, data: { taskCounter: { increment: 1 } } });
@@ -199,6 +231,8 @@ export class TasksService {
           parentId: dto.parentId,
           createdById: userId,
           proposalState,
+          recurrence: dto.recurrence,
+          customFields: customFields as Prisma.InputJsonValue | undefined,
           orderKey: rankBetween(last?.orderKey ?? null, null),
           completedAt: status.category === 'DONE' ? new Date() : null,
           assignees: { create: assigneeIds.map((id) => ({ userId: id, role: 'ASSIGNEE' as const })) },
@@ -215,9 +249,13 @@ export class TasksService {
 
   async update(taskId: string, userId: string, dto: UpdateTaskDto) {
     const task = await this.access.task(taskId, userId, 'MEMBER');
-    const { archived, ...fields } = dto;
+    const { archived, customFields, ...fields } = dto;
+    if (fields.recurrence && !parseRRule(fields.recurrence)) throw new BadRequestException('Invalid recurrence rule');
     const data: Prisma.TaskUncheckedUpdateInput = {
       ...fields,
+      customFields: customFields
+        ? ((await this.mergeCustomFields(task.project, (task.customFields as Record<string, unknown>) ?? {}, customFields)) as Prisma.InputJsonValue)
+        : undefined,
       description: fields.description as Prisma.InputJsonValue | undefined,
       startAt: toDate(fields.startAt),
       dueAt: toDate(fields.dueAt),
@@ -421,7 +459,10 @@ export class TasksService {
       if (status.category !== 'DONE' && wasDone) data.completedAt = null;
     }
 
+    const completing = data.completedAt instanceof Date && !task.completedAt;
+    if (completing && task.recurrence) data.recurrence = null;
     const updated = await this.prisma.task.update({ where: { id: task.id }, data, include: taskListInclude });
+    if (completing && task.recurrence) await this.spawnNext(task, userId);
 
     const diff: Record<string, unknown> = { ...extraDiff };
     for (const key of Object.keys(data) as (keyof Task)[]) {
@@ -445,6 +486,59 @@ export class TasksService {
       );
     }
     return serializeTask(updated);
+  }
+
+  /** Creates the next instance of a recurring task; the series continues on the new task. */
+  private async spawnNext(task: Task & { project: Project }, userId: string) {
+    const anchor = task.dueAt ?? new Date();
+    const nextDue = nextOccurrence(task.recurrence!, anchor);
+    if (!nextDue) return;
+    const shift = nextDue.getTime() - anchor.getTime();
+    const [assignees, labels, todo] = await Promise.all([
+      this.prisma.taskAssignee.findMany({ where: { taskId: task.id } }),
+      this.prisma.taskLabel.findMany({ where: { taskId: task.id } }),
+      this.prisma.status.findFirst({ where: { projectId: task.projectId, category: 'TODO' }, orderBy: { order: 'asc' } }),
+    ]);
+    const statusId = todo?.id ?? task.statusId;
+    const next = await this.prisma.$transaction(async (tx) => {
+      const { taskCounter } = await tx.project.update({ where: { id: task.projectId }, data: { taskCounter: { increment: 1 } } });
+      const last = await tx.task.findFirst({ where: { statusId }, orderBy: { orderKey: 'desc' }, select: { orderKey: true } });
+      return tx.task.create({
+        data: {
+          projectId: task.projectId,
+          number: taskCounter,
+          parentId: task.parentId,
+          title: task.title,
+          description: task.description ?? undefined,
+          statusId,
+          priority: task.priority,
+          estimateMin: task.estimateMin,
+          storyPoints: task.storyPoints,
+          startAt: task.startAt ? new Date(task.startAt.getTime() + shift) : null,
+          dueAt: nextDue,
+          recurrence: task.recurrence,
+          customFields: task.customFields ?? undefined,
+          createdById: task.createdById,
+          orderKey: rankBetween(last?.orderKey ?? null, null),
+          assignees: { create: assignees.map((a) => ({ userId: a.userId, role: a.role })) },
+          labels: { create: labels.map((l) => ({ labelId: l.labelId })) },
+        },
+      });
+    });
+    this.emit(Events.TaskCreated, task.project, next.id, userId, 'recurred', { from: task.id, title: next.title });
+  }
+
+  private async mergeCustomFields(project: Project, current: Record<string, unknown>, patch: Record<string, unknown>) {
+    const fields = await this.prisma.customField.findMany({ where: { projectId: project.id, id: { in: Object.keys(patch) } } });
+    if (fields.length !== Object.keys(patch).length) throw new BadRequestException('Unknown custom field');
+    const members = new Set((await this.prisma.membership.findMany({ where: { workspaceId: project.workspaceId }, select: { userId: true } })).map((m) => m.userId));
+    const next = { ...current };
+    for (const field of fields) {
+      const value = coerceFieldValue(field, patch[field.id], members);
+      if (value === null) delete next[field.id];
+      else next[field.id] = value;
+    }
+    return next;
   }
 
   private async sibling(id: string | undefined, projectId: string) {

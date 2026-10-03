@@ -61,6 +61,12 @@ export function Sidebar() {
         {item(`${base}/team`, 'users', t('nav2.team'))}
       </Section>
 
+      <Section title={t('nav2.planning')}>
+        {item(`${base}/calendar`, 'calendar', t('nav2.calendar'))}
+        {item(`${base}/workload`, 'bolt', t('nav2.workload'))}
+        {item(`${base}/timesheet`, 'clock', t('nav2.timesheet'))}
+      </Section>
+
       <Section
         title={t('nav2.projects')}
         action={<IconButton icon="plus" label={t('nav2.newProject')} className="size-6" onClick={() => setNewProject(true)} />}

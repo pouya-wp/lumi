@@ -31,6 +31,9 @@ export function useRealtime(enabled: boolean) {
       qc.invalidateQueries({ queryKey: ['myTasks'] });
       qc.invalidateQueries({ queryKey: ['dashboard'] });
       qc.invalidateQueries({ queryKey: ['projects'] });
+      qc.invalidateQueries({ queryKey: ['range'] });
+      qc.invalidateQueries({ queryKey: ['taskTime', e.taskId] });
+      qc.invalidateQueries({ queryKey: ['timesheet'] });
     };
     const onComment = (e: TaskEvent) => {
       qc.invalidateQueries({ queryKey: ['comments', e.taskId] });

@@ -34,6 +34,8 @@ export class CreateTaskDto {
   @IsOptional() @IsArray() @ArrayMaxSize(20) @IsString({ each: true }) labelIds?: string[];
   /** Label names to find or create, used by quick-add (#label). */
   @IsOptional() @IsArray() @ArrayMaxSize(20) @IsString({ each: true }) labelNames?: string[];
+  @IsOptional() @IsString() @MaxLength(200) recurrence?: string;
+  @IsOptional() @IsObject() customFields?: Record<string, unknown>;
 }
 
 export class UpdateTaskDto {
@@ -46,6 +48,10 @@ export class UpdateTaskDto {
   @IsOptional() @ValidateIf((_, v) => v !== null) @IsInt() @Min(0) estimateMin?: number | null;
   @IsOptional() @ValidateIf((_, v) => v !== null) @IsInt() @Min(0) storyPoints?: number | null;
   @IsOptional() @IsBoolean() archived?: boolean;
+  /** Partial map of custom field id → value; null clears a value. */
+  @IsOptional() @IsObject() customFields?: Record<string, unknown>;
+  /** RRULE subset (see packages/shared recurrence.ts); null stops repeating. */
+  @IsOptional() @ValidateIf((_, v) => v !== null) @IsString() @MaxLength(200) recurrence?: string | null;
 }
 
 export class ListTasksQuery {
@@ -55,6 +61,18 @@ export class ListTasksQuery {
   @IsOptional() @IsString() @MaxLength(100) q?: string;
   @IsOptional() @IsString() parentId?: string;
   @IsOptional() @IsIn(['true', 'false']) includeSubtasks?: string;
+  @IsOptional() @IsString() labelId?: string;
+  /** Comma-separated status categories, e.g. TODO,IN_PROGRESS */
+  @IsOptional() @IsString() categories?: string;
+}
+
+/** Workspace-wide tasks scheduled within [from, to) — by due date or start..due span. */
+export class RangeTasksQuery {
+  @IsDateString() from!: string;
+  @IsDateString() to!: string;
+  @IsOptional() @IsString() projectId?: string;
+  @IsOptional() @IsString() assigneeId?: string;
+  @IsOptional() @IsIn(['true', 'false']) includeDone?: string;
 }
 
 export class MyTasksQuery {
