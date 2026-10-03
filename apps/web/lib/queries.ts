@@ -10,6 +10,8 @@ import type {
   Channel,
   ChatMessage,
   Comment,
+  GameMember,
+  Report,
   DocBrief,
   DocDetail,
   DocVersion,
@@ -73,6 +75,8 @@ export const keys = {
   channels: (wid: string) => ['channels', wid] as const,
   messages: (channelId: string) => ['messages', channelId] as const,
   thread: (id: string) => ['thread', id] as const,
+  reports: (wid: string, from: string, projectId: string) => ['reports', wid, from, projectId] as const,
+  game: (wid: string) => ['game', wid] as const,
 };
 
 const enabled = (...ids: (string | null | undefined)[]) => ids.every(Boolean);
@@ -202,3 +206,12 @@ export const useMessages = (channelId?: string | null) =>
   useQuery({ queryKey: keys.messages(channelId!), queryFn: () => get<ChatMessage[]>(`/channels/${channelId}/messages`), enabled: enabled(channelId) });
 export const useThread = (id?: string | null) =>
   useQuery({ queryKey: keys.thread(id!), queryFn: () => get<{ root: ChatMessage; replies: ChatMessage[] }>(`/messages/${id}/thread`), enabled: enabled(id) });
+export const useReport = (wid: string | null | undefined, from: Date, projectId: string) =>
+  useQuery({
+    queryKey: keys.reports(wid!, from.toISOString(), projectId),
+    queryFn: () => get<Report>(`/workspaces/${wid}/reports?from=${from.toISOString()}${projectId ? `&projectId=${projectId}` : ''}`),
+    enabled: enabled(wid),
+    placeholderData: (prev) => prev,
+  });
+export const useGame = (wid?: string | null) =>
+  useQuery({ queryKey: keys.game(wid!), queryFn: () => get<{ members: GameMember[]; badges: string[] }>(`/workspaces/${wid}/gamification`), enabled: enabled(wid) });

@@ -120,7 +120,10 @@
     "docs": "Docs",
     "chat": "Chat",
     "collab": "Collaborate",
-    "newDoc": "New page"
+    "newDoc": "New page",
+    "reports": "Reports",
+    "arena": "Arena",
+    "insights": "Insights"
   },
   "dash": {
     "welcome": "Welcome back,",
@@ -233,7 +236,8 @@
     "comment.mention": "mentioned you in “{title}”",
     "comment.reply": "replied to you in “{title}”",
     "workspace.joined": "joined the workspace",
-    "automation": "automation updated “{title}”"
+    "automation": "automation updated “{title}”",
+    "badge": "You earned the “{title}” badge! 🏅"
   },
   "activity": {
     "created": "created",
@@ -768,5 +772,176 @@
     "pick": "Pick a conversation",
     "members": "{n} members",
     "you": "you"
+  },
+  "reports": {
+    "title": "Reports & insights",
+    "subtitle": "How work flows, how fast it ships, and where it gets stuck.",
+    "range": {
+      "7": "7 days",
+      "30": "30 days",
+      "90": "90 days"
+    },
+    "allProjects": "All projects",
+    "export": "Export CSV",
+    "exported": "CSV downloaded",
+    "completed": "Completed",
+    "created": "Created",
+    "cycleMedian": "Median cycle time",
+    "onTime": "On-time delivery",
+    "logged": "Time logged",
+    "focus": "Focus time",
+    "wip": "In flight",
+    "overdue": "Overdue",
+    "throughput": "Daily throughput",
+    "throughputHint": "Created vs completed",
+    "cfd": "Cumulative flow (CFD)",
+    "cfdHint": "A widening band means work is piling up",
+    "cycle": "Cycle time",
+    "cycleHint": "From start of work to done",
+    "p50": "Median",
+    "p85": "85% finish within",
+    "avg": "Average",
+    "lead": "Lead time (from creation)",
+    "buckets": {
+      "lt1d": "< 1 day",
+      "1to2d": "1–2 days",
+      "2to4d": "2–4 days",
+      "4to7d": "4–7 days",
+      "1to2w": "1–2 weeks",
+      "gt2w": "> 2 weeks"
+    },
+    "people": "Team performance",
+    "person": "Member",
+    "done": "Done",
+    "open": "Open",
+    "inProgress": "In progress",
+    "avgCycle": "Avg cycle",
+    "trend": "Trend",
+    "projects": "Projects & time",
+    "priorities": "Open work by priority",
+    "labels": "Top labels",
+    "aging": "Work in progress (age)",
+    "agingHint": "Oldest first — these may be stuck",
+    "noData": "No data in this range yet",
+    "hours": "{n} h",
+    "days": "{n} d",
+    "h": "h",
+    "d": "d",
+    "cats": {
+      "BACKLOG": "Backlog",
+      "TODO": "To do",
+      "IN_PROGRESS": "In progress",
+      "REVIEW": "Review",
+      "DONE": "Done"
+    }
+  },
+  "game": {
+    "title": "Beyondex Arena",
+    "subtitle": "Real work earns XP — tasks, focus, habits, docs and chat.",
+    "level": "Level {n}",
+    "xp": "{n} XP",
+    "toNext": "{n} XP to next level",
+    "weekXp": "XP this week",
+    "leaderboard": "This week",
+    "streak": "Streak",
+    "best": "Best: {n} days",
+    "daysStreak": "{n}-day streak",
+    "heatmap": "Last 12 weeks",
+    "badges": {
+      "first_task": {
+        "name": "First step",
+        "desc": "Finished your first task"
+      },
+      "ten_done": {
+        "name": "Ten down",
+        "desc": "10 tasks completed"
+      },
+      "fifty_done": {
+        "name": "Half century",
+        "desc": "50 tasks completed"
+      },
+      "hundred_done": {
+        "name": "Centurion",
+        "desc": "100 tasks completed"
+      },
+      "streak_3": {
+        "name": "Warming up",
+        "desc": "Shipped 3 days in a row"
+      },
+      "streak_7": {
+        "name": "On fire",
+        "desc": "7-day streak"
+      },
+      "streak_30": {
+        "name": "Unstoppable",
+        "desc": "30-day streak"
+      },
+      "early_bird": {
+        "name": "Early bird",
+        "desc": "Finished a task before 8 am"
+      },
+      "night_owl": {
+        "name": "Night owl",
+        "desc": "Finished a task after 11 pm"
+      },
+      "on_time_10": {
+        "name": "Punctual",
+        "desc": "10 tasks before their deadline"
+      },
+      "urgent_slayer": {
+        "name": "Firefighter",
+        "desc": "Resolved 5 urgent tasks"
+      },
+      "team_player": {
+        "name": "Team player",
+        "desc": "Finished 5 tasks others created"
+      },
+      "deep_focus": {
+        "name": "Deep focus",
+        "desc": "10 hours of focus sessions"
+      },
+      "marathon": {
+        "name": "Marathon",
+        "desc": "A 50-minute focus session"
+      },
+      "writer": {
+        "name": "Writer",
+        "desc": "Wrote 3 docs"
+      },
+      "chatty": {
+        "name": "Chatty",
+        "desc": "50 chat messages"
+      },
+      "habit_hero": {
+        "name": "Habit hero",
+        "desc": "Logged habits 21 times"
+      }
+    },
+    "locked": "Locked",
+    "earned": "Earned {when}",
+    "rules": "How XP works",
+    "you": "you",
+    "done": "{n} tasks",
+    "rule": {
+      "task": "Complete a task",
+      "priority": "Priority bonus (urgent +15, high +8)",
+      "onTime": "Done before the deadline",
+      "focus": "Every 5 focus minutes",
+      "habit": "Log a habit",
+      "doc": "Write a doc",
+      "comment": "Comment",
+      "message": "Chat message"
+    },
+    "levels": [
+      "Newcomer",
+      "Apprentice",
+      "Builder",
+      "Pro",
+      "Master",
+      "Champion",
+      "Legend",
+      "Beyondex Myth"
+    ],
+    "badgesTitle": "Badges"
   }
 }

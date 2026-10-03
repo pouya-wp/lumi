@@ -704,3 +704,15 @@ model Message {
 
   @@index([channelId, createdAt])
 }
+
+/// A badge a member earned in a workspace; computed from activity and stored once.
+model Achievement {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  key         String
+  earnedAt    DateTime @default(now())
+
+  @@unique([workspaceId, userId, key])
+  @@index([workspaceId])
+}

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { num, useT } from '@/lib/i18n-client';
-import { useChannels, useMyTasks, useProjects, useUnreadCount } from '@/lib/queries';
+import { useChannels, useGame, useMyTasks, useProjects, useUnreadCount } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { useUi } from '@/lib/ui-state';
 import { Avatar, cx, Icon, IconButton, type IconName } from '../ui';
@@ -24,6 +24,7 @@ export function Sidebar() {
   const channels = useChannels(workspace?.id);
   const chatUnread = channels.data?.reduce((a, c) => a + c.unread, 0);
   const { create: createDoc } = useCreateDoc();
+  const me = useGame(workspace?.id).data?.members.find((m) => m.user.id === user?.id);
   const base = `/${locale}/app`;
 
   const item = (href: string, icon: IconName, label: string, badge?: number, exact = false) => {
@@ -79,6 +80,11 @@ export function Sidebar() {
         {item(`${base}/timesheet`, 'clock', t('nav2.timesheet'))}
       </Section>
 
+      <Section title={t('nav2.insights')}>
+        {item(`${base}/reports`, 'bolt', t('nav2.reports'))}
+        {item(`${base}/arena`, 'flag', t('nav2.arena'))}
+      </Section>
+
       <Section title={t('nav2.methods')}>
         {item(`${base}/goals`, 'flag', t('nav2.goals'))}
         {item(`${base}/focus`, 'sparkle', t('nav2.focus'))}
@@ -119,9 +125,19 @@ export function Sidebar() {
           {user && <Avatar name={user.name} src={user.avatarUrl} size={38} />}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{user?.name}</p>
-            <p className="truncate text-[11px] text-muted" dir="ltr">
-              {user?.email}
-            </p>
+            {me ? (
+              <Link href={`${base}/arena`} className="mt-1 flex items-center gap-1.5 text-[11px] text-muted hover:text-ink">
+                <span className="rounded-full bg-ink px-1.5 text-[10px] font-semibold text-on-ink">{num(me.level, locale)}</span>
+                <span className="h-1 flex-1 overflow-hidden rounded-full bg-sunken">
+                  <span className="block h-full rounded-full bg-gradient-to-r from-[#4F5BFF] to-[#F97316]" style={{ width: `${me.progress * 100}%` }} />
+                </span>
+                {me.streak.current > 0 && <span>🔥{num(me.streak.current, locale)}</span>}
+              </Link>
+            ) : (
+              <p className="truncate text-[11px] text-muted" dir="ltr">
+                {user?.email}
+              </p>
+            )}
           </div>
           <IconButton icon="logout" label={t('auth.logout')} onClick={signOut} className="size-8" />
         </div>

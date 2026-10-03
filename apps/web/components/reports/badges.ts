@@ -1,0 +1,20 @@
+/** Emoji shown for each badge key returned by the gamification API. */
+export const BADGE_EMOJI: Record<string, string> = {
+  first_task: '🌱',
+  ten_done: '🔟',
+  fifty_done: '🏅',
+  hundred_done: '💯',
+  streak_3: '🔥',
+  streak_7: '☄️',
+  streak_30: '🌋',
+  early_bird: '🌅',
+  night_owl: '🦉',
+  on_time_10: '⏰',
+  urgent_slayer: '🧯',
+  team_player: '🤝',
+  deep_focus: '🧘',
+  marathon: '🏃',
+  writer: '✍️',
+  chatty: '💬',
+  habit_hero: '🦸',
+};
