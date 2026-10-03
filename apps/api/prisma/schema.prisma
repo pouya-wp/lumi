@@ -84,6 +84,8 @@ model User {
   habits        Habit[]
   focusSessions FocusSession[]
   planBlocks    PlanBlock[]
+  messages      Message[]
+  channelMembers ChannelMember[]
 }
 
 model RefreshToken {
@@ -112,6 +114,8 @@ model Workspace {
   invites     Invite[]
   goals       Goal[]
   habits      Habit[]
+  docs        Doc[]
+  channels    Channel[]
 }
 
 model Invite {
@@ -597,4 +601,106 @@ model PlanBlock {
   task    Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
   @@index([userId, startAt])
+}
+
+enum DocKind {
+  PAGE
+  MEETING
+}
+
+/// Notion-style page. `ystate` is the Yjs document (source of truth while editing);
+/// `content`/`text` are JSON/plain snapshots the editor posts for search, mobile and history.
+model Doc {
+  id          String       @id @default(cuid())
+  workspaceId String
+  parentId    String?
+  kind        DocKind      @default(PAGE)
+  title       String       @default("")
+  icon        String?
+  cover       String?
+  content     Json?
+  text        String       @default("")
+  ystate      Bytes?
+  orderKey    String
+  fullWidth   Boolean      @default(false)
+  meetingAt   DateTime?
+  attendeeIds String[]     @default([])
+  projectId   String?
+  createdById String
+  updatedById String
+  archivedAt  DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  workspace   Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent      Doc?         @relation("DocTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Doc[]        @relation("DocTree")
+  versions    DocVersion[]
+
+  @@index([workspaceId, parentId, orderKey])
+  @@index([workspaceId, meetingAt])
+}
+
+model DocVersion {
+  id        String   @id @default(cuid())
+  docId     String
+  title     String
+  content   Json
+  authorId  String
+  createdAt DateTime @default(now())
+  doc       Doc      @relation(fields: [docId], references: [id], onDelete: Cascade)
+
+  @@index([docId, createdAt])
+}
+
+enum ChannelKind {
+  PUBLIC
+  DIRECT
+}
+
+model Channel {
+  id          String          @id @default(cuid())
+  workspaceId String
+  kind        ChannelKind     @default(PUBLIC)
+  name        String
+  topic       String?
+  emoji       String?
+  /// For DIRECT channels: sorted member ids joined with ":" to keep one DM per pair.
+  dmKey       String?
+  createdAt   DateTime        @default(now())
+  workspace   Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  members     ChannelMember[]
+  messages    Message[]
+
+  @@unique([workspaceId, dmKey])
+}
+
+model ChannelMember {
+  channelId  String
+  userId     String
+  lastReadAt DateTime @default(now())
+  channel    Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([channelId, userId])
+}
+
+model Message {
+  id        String    @id @default(cuid())
+  channelId String
+  authorId  String
+  parentId  String?
+  text      String
+  mentionIds String[] @default([])
+  /// { "👍": [userId, …] }
+  reactions Json      @default("{}")
+  taskId    String?
+  editedAt  DateTime?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  channel   Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  author    User      @relation(fields: [authorId], references: [id])
+  parent    Message?  @relation("Thread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Message[] @relation("Thread")
+
+  @@index([channelId, createdAt])
 }

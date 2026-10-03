@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
 import { Events, type CommentEvent, type NotificationEvent, type ProjectEvent, type TaskEvent } from '../common/events';
+import { ChatEvent, type ChatEventPayload } from '../chat/chat.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 /**
@@ -48,6 +49,12 @@ export class RealtimeGateway implements OnGatewayConnection {
   @OnEvent(Events.ProjectChanged)
   onProject(e: ProjectEvent) {
     this.server?.to(`workspace:${e.workspaceId}`).emit('project', e);
+  }
+
+  @OnEvent(ChatEvent)
+  onChat(e: ChatEventPayload) {
+    if (e.userIds) for (const id of e.userIds) this.server?.to(`user:${id}`).emit('chat', e);
+    else this.server?.to(`workspace:${e.workspaceId}`).emit('chat', e);
   }
 
   @OnEvent(Events.NotificationCreated)
