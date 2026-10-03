@@ -34,6 +34,11 @@ const paths = {
   globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18Z',
   lock: 'M6 11h12v10H6zM8 11V7a4 4 0 1 1 8 0v4',
   bolt: 'M13 2 4 14h7l-1 8 9-12h-7z',
+  doc: 'M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7zM14 3v4h4M9 12h6M9 16h4',
+  hash: 'M5 9h14M5 15h14M10 3 8 21M16 3l-2 18',
+  send: 'M21 3 10 14M21 3l-7 18-4-7-7-4z',
+  history: 'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
+  grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
 } as const;
 
 export type IconName = keyof typeof paths;

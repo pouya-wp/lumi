@@ -119,6 +119,9 @@ export function templateContent(template: string | undefined): { title: string; 
   }
 }
 
+/** Templates open with a matching cover so new pages feel finished. */
+const TEMPLATE_COVERS: Record<string, string> = { meeting: 'ink', prd: 'lilac', retro: 'sunset', onboarding: 'mint' };
+
 const listSelect = { id: true, parentId: true, title: true, icon: true, kind: true, orderKey: true, updatedAt: true, meetingAt: true } as const;
 
 @Injectable()
@@ -153,6 +156,7 @@ export class DocsService {
         parentId: dto.parentId,
         title: dto.title ?? tpl.title,
         icon: dto.icon ?? tpl.icon,
+        cover: dto.template ? TEMPLATE_COVERS[dto.template] : undefined,
         kind: tpl.kind,
         content: tpl.doc as Prisma.InputJsonValue,
         orderKey: rankBetween(last?.orderKey ?? null, null),

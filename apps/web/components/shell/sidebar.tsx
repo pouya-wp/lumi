@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { num, useT } from '@/lib/i18n-client';
-import { useMyTasks, useProjects, useUnreadCount } from '@/lib/queries';
+import { useChannels, useMyTasks, useProjects, useUnreadCount } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { useUi } from '@/lib/ui-state';
 import { Avatar, cx, Icon, IconButton, type IconName } from '../ui';
+import { DocTree } from '../docs/doc-tree';
+import { useCreateDoc } from '../docs/use-create-doc';
 import { NewProjectDialog } from './new-project-dialog';
 
 export function Sidebar() {
@@ -19,6 +21,9 @@ export function Sidebar() {
   const unread = useUnreadCount();
   const today = useMyTasks(workspace?.id, 'today');
   const [newProject, setNewProject] = useState(false);
+  const channels = useChannels(workspace?.id);
+  const chatUnread = channels.data?.reduce((a, c) => a + c.unread, 0);
+  const { create: createDoc } = useCreateDoc();
   const base = `/${locale}/app`;
 
   const item = (href: string, icon: IconName, label: string, badge?: number, exact = false) => {
@@ -60,6 +65,12 @@ export function Sidebar() {
         {item(`${base}/my-tasks`, 'checkCircle', t('nav2.myTasks'), today.data?.length)}
         {item(`${base}/inbox`, 'inbox', t('nav2.inbox'), unread.data?.count)}
         {item(`${base}/team`, 'users', t('nav2.team'))}
+      </Section>
+
+      <Section title={t('nav2.collab')} action={<IconButton icon="plus" label={t('nav2.newDoc')} className="size-6" onClick={() => createDoc('blank')} />}>
+        {item(`${base}/chat`, 'message', t('nav2.chat'), chatUnread)}
+        {item(`${base}/docs`, 'doc', t('nav2.docs'), undefined, true)}
+        <DocTree />
       </Section>
 
       <Section title={t('nav2.planning')}>
