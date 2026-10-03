@@ -1,67 +1,97 @@
-# Lumi Design Language — «Playful Pro»
+# Lumi Design Language — «Soft Canvas × Night Glow»
 
-> محصول تیم **Beyondex** · الهام اصلی: dastyar.io + حس Dribbble (bento، استیکر، 3D، میکروانیمیشن)
-> این سند منبع حقیقت توکن‌های دیزاین برای وب (Tailwind) و موبایل (Flutter ThemeExtension) است.
+> محصول تیم **Beyondex** · نسخه ۲
+> مرجع‌ها: dastyar.io (صمیمیت، پاستل، استیکر) + داشبورد Dribbble «Teknova» (کانوس نرم، پنل‌های سفید، قرص‌های مشکی، نمودار هاشور) + لایه‌ای از جزئیات Awwwards که در هیچ‌کدام نیست.
+> این سند منبع حقیقت توکن‌ها برای وب (`apps/web/app/globals.css`) و موبایل (`apps/mobile/lib/core/theme`) است.
 
-## ۱. روح دیزاین
-- **صمیمی ولی حرفه‌ای:** سفید و تمیز مثل دستیار، اما با جسارت Dribbble — کارت‌های bento، استیکرهای کج، ایموجی سه‌بعدی، سایه‌های رنگی نرم.
-- **«ابزار ساده نیست، دستیار است»:** هر صفحه یک «صحنه» دارد: هدر با سلام شخصی + آب‌وهوا/ساعت، ویجت‌ها، و یک لحظه شادی (confetti، شخصیت).
-- **فارسی-اول:** RTL، اعداد فارسی، تقویم شمسی، تایپوگرافی درشت و گرد.
+## ۱. ایده مرکزی
+**«نور روی کاغذ»** — اپ یک کانوس خاکستری‌ـ‌مرواریدی است که پنل‌های سفید مثل کاغذ روی آن شناورند. رنگ تقریباً تک‌رنگ (جوهر مشکی) است و **نور** (Lumi = نور) فقط جایی ظاهر می‌شود که معنا دارد: کار در جریان، هدف نزدیک، هوش مصنوعی در حال فکر. هرچه کار مهم‌تر، درخشان‌تر.
 
-## ۲. رنگ
+## ۲. تایپوگرافی
+- **فونت اصلی: Meem** (Light 300 · Regular 400 · Medium 500 · DemiBold 600 · Bold 700) برای فارسی و لاتین
+- ارقام: فارسی در UI فارسی، `tabular-nums` برای اعداد جدول و تایمر
+- مقیاس: Display 64/68 Bold (فقط لندینگ، با tracking −2%) · H1 30/38 DemiBold · H2 22/30 DemiBold · H3 17/24 Medium · Body 14/22 Regular · Small 12/18 · Micro 11/14 Medium (برچسب‌ها)
+- تیترهای سلام با ایموجی دست‌تکان 👋 (از دستیار و Teknova)
 
-### Brand
-| توکن | Light | Dark | کاربرد |
-|---|---|---|---|
-| `primary` | `#3D5AFE` | `#6C83FF` | دکمه اصلی، لینک، فوکوس (آبی رویال دستیار) |
-| `primary-soft` | `#EEF1FF` | `#1C2250` | پس‌زمینه انتخاب |
-| `ink` | `#0E1330` | `#F2F4FF` | متن اصلی |
-| `ink-muted` | `#6B7194` | `#9AA0C3` | متن ثانویه |
-| `surface` | `#FFFFFF` | `#0B0E22` | پس‌زمینه |
-| `surface-raised` | `#F7F8FC` | `#141838` | کارت‌ها |
-| `night` | `#0A0F3C → #1B1F6B` | — | باند CTA ستاره‌ای / Focus mode |
+## ۳. رنگ
 
-### Pastel Bento (هر ماژول یک رنگ)
-| ماژول | bg | accent |
+### پایه (Light)
+| توکن | مقدار | کاربرد |
 |---|---|---|
-| Tasks / تودولیست | `#EEF0FF` lavender | `#5B5BF0` |
-| Calendar / تقویم | `#FFEFF1` blush | `#F2557A` |
-| Notes & Docs | `#FFF8DB` butter | `#E8A300` |
-| Daily / روزانه | `#E6F8FB` sky | `#14A8C8` |
-| Goals / OKR | `#E9F9EF` mint | `#1DB46A` |
-| Time / Pomodoro | `#FFF0E6` peach | `#FF7A2F` |
+| `canvas` | `#F1F2F4` | پس‌زمینه اپ (کانوس) |
+| `panel` | `#FFFFFF` | پنل‌ها/کارت‌ها |
+| `panel-sunken` | `#F7F8FA` | ردیف‌ها، فیلدها، اسلات‌های داخل پنل |
+| `ink` | `#0B0C0F` | متن، **دکمه اصلی و آیتم فعال منو (قرص مشکی)** |
+| `ink-2` | `#3A3D45` | متن ثانویه پررنگ |
+| `muted` | `#8A8F99` | متن کمرنگ، آیکون غیرفعال |
+| `line` | `#E8E9EC` | خطوط و جداکننده |
 
-### Priority
-Urgent `#FF4D4F` · High `#FF8A00` · Medium `#3D5AFE` · Low `#9AA0C3`
+### پایه (Dark — «Night»)
+canvas `#07080C` · panel `#111319` · panel-sunken `#181B23` · ink `#F4F5F7` · muted `#7D8390` · line `#22252E`؛ قرص فعال در دارک **سفید** با متن مشکی.
 
-## ۳. تایپوگرافی
-- فونت: **Peyda** (نمایشی، تیترها) + **Vazirmatn** (بدنه، رایگان/OFL) ؛ لاتین: **Inter / Plus Jakarta Sans**
-- مقیاس: Display 48/56 ExtraBlack · H1 32/40 Black · H2 24/32 Bold · H3 18/26 Bold · Body 15/24 · Caption 12/18
-- اعداد: `font-feature-settings: "ss01"` و تبدیل به ارقام فارسی در UI
+### نور (Lumi Glow) — رنگ برند
+| توکن | مقدار | معنا |
+|---|---|---|
+| `lumi` | `#4F5BFF` | برند، فوکوس، AI (آبیِ دستیار، کمی بنفش‌تر) |
+| `lumi-glow` | `radial(#4F5BFF55 → transparent)` | هاله پشت عناصر «زنده» |
+| `success` | `#16A34A` / soft `#DCFCE7` | انجام‌شده، رشد (قرص سبز Teknova) |
+| `warn` | `#F97316` / soft `#FFEDD5` | هشدار، کاهش |
+| `danger` | `#EF4444` / soft `#FEE2E2` | فوری، لغو |
+| `info` | `#0EA5E9` / soft `#E0F2FE` | در انتظار |
 
-## ۴. شکل و عمق
-- Radius: `sm 10` · `md 16` · `lg 24` · `xl 32` (کارت bento) · `full`
-- سایه رنگی (Dribbble): `0 12px 32px -12px rgb(61 90 254 / .35)` برای دکمه اصلی؛ کارت‌ها `0 1px 0 rgb(14 19 48/.04), 0 8px 24px -16px rgb(14 19 48/.15)`
-- Glass: `backdrop-blur(20px)` + `bg-white/70` روی هدرها و شیت‌های موبایل
-- Border: `1px` با `ink/6%`
+### Aurora (شکوفه‌های گوشه پنل)
+هر پنل مهم یک شکوفه رنگی محو در یک گوشه دارد (مثل Teknova: سبز/هلویی). ماژول‌ها رنگ آئورای خود را دارند:
+Tasks `#4F5BFF` · Calendar `#F43F5E` · Goals `#16A34A` · Time `#F97316` · Docs `#EAB308` · AI `#8B5CF6`
+پیاده‌سازی: `radial-gradient(60% 80% at 100% 0%, color/14%, transparent)`.
 
-## ۵. امضاهای بصری (Signature elements)
-1. **Sticker chips:** برچسب‌های کج (`rotate(-6deg)`) با سایه، رنگ پاستلی تند — برای «جدید»، «AI»، «فوری».
-2. **3D emoji icons:** ایموجی‌های Fluent 3D (MIT) کنار تیترها و در empty state‌ها.
-3. **Scene header:** داشبورد بالای صفحه با پس‌زمینه گرادیانی متغیر با ساعت روز (صبح آسمانی، عصر نارنجی، شب ستاره‌ای) + سلام شخصی و آب‌وهوا.
-4. **Bento dashboard:** ویجت‌های با اندازه‌های متفاوت (1×1, 2×1, 2×2) قابل جابه‌جایی.
-5. **Starry night band:** Focus mode و CTA ها روی سرمه‌ای با ستاره‌های چشمک‌زن.
-6. **Mascot «لومی»:** یک شخصیت نورانی کوچک (ستاره/کرم شب‌تاب) برای empty state، onboarding و جشن‌ها.
+### اولویت
+Urgent `danger` · High `warn` · Medium `lumi` · Low `muted`
+
+## ۴. فرم و فاصله
+- کانوس داخل یک **قاب اپ** با radius `28px` و سایه بسیار نرم (روی دسکتاپ پهن)؛ پنل‌ها radius `22px`؛ عناصر داخلی `14px`؛ قرص‌ها `999px`
+- گرید ۸؛ فاصله بین پنل‌ها `12px`؛ padding پنل `20px`
+- سایه پنل: `0 1px 2px rgb(11 12 15/.04), 0 12px 32px -20px rgb(11 12 15/.18)`
+- بوردر داخلی hairline: `inset 0 0 0 1px line`
+
+## ۵. امضاهای بصری
+### از مرجع‌ها
+1. **قرص مشکی** برای آیتم فعال منو، دکمه اصلی (Export / Invite)، و toastها (مثل «Your daily customer has increased»)
+2. **نمودار ستونی هاشوردار:** ستون‌ها با الگوی خط‌خطی مورب کمرنگ؛ ستون انتخاب‌شده **مشکی با هاشور تیره** + tooltip مشکی شناور + برچسب درصد سبز/نارنجی روی هر ستون
+3. **Gauge قطعه‌قطعه** (۱۲ سگمنت گرد) برای پیشرفت اسپرینت/هدف
+4. **قرص‌های دلتا** (`+6%` سبز، `-2%` نارنجی) کنار هر عدد KPI
+5. **استیکر کج** و **ایموجی** از دستیار — فقط در لحظات شادی و empty state
+6. **Avatar stack** با `+N` و دکمه Invite مشکی
+
+### لایه Awwwards (امضای خود لومی)
+7. **Lumi Pulse:** هر تسکی که الان «در جریان» است یک نقطه نور با هاله تپنده دارد؛ در داشبورد، پنل «الان» با یک **پرتو نور متحرک** روی بوردرش (conic-gradient چرخان) مشخص است.
+8. **Cursor Light:** در وب، یک spotlight نرم با موقعیت ماوس روی پنل‌ها حرکت می‌کند (`--mx/--my`) و بوردر نزدیک ماوس روشن می‌شود.
+9. **Day Arc:** بالای داشبورد یک کمان نازک طلوع‌ـ‌غروب که موقعیت «الان» را در روز کاری نشان می‌دهد و رنگ آئورا با ساعت روز عوض می‌شود (صبح هلویی، ظهر آبی، شب بنفش).
+10. **Grain:** نویز بسیار ظریف (SVG feTurbulence، 3٪) روی کانوس برای حس کاغذ.
+11. **Kinetic numbers:** اعداد KPI هنگام ورود با odometer رول می‌شوند.
+12. **Completion bloom:** تیک خوردن تسک → دایره پر می‌شود، خط‌خوردگی رسم می‌شود و یک موج نور از چک‌باکس پخش می‌شود؛ تکمیل اسپرینت → confetti.
+13. **View Transitions:** باز شدن تسک از کارت به drawer با shared-element morph.
+14. **Command palette «⌘K»** با بلور شیشه‌ای و پاسخ AI در همان پنجره.
 
 ## ۶. حرکت
-- Spring: `stiffness 380, damping 30`؛ مدت‌ها 120/200/320ms
-- Check-off تسک: خط‌خوردگی انیمیشنی + ذرات کوچک؛ تکمیل اسپرینت/هدف: confetti
-- Hover کارت: `translateY(-2px)` + سایه عمیق‌تر؛ Drag: tilt `2deg` + scale `1.02`
-- همیشه `prefers-reduced-motion` رعایت شود.
+- easing: `cubic-bezier(.2,.8,.2,1)`؛ مدت 140 / 220 / 360ms
+- hover پنل: spotlight + بالا آمدن 1px؛ press: scale .98
+- Drag کارت: tilt 2° و سایه عمیق؛ placeholder هاشوردار
+- همیشه `prefers-reduced-motion` → حذف pulse، arc، odometer
 
-## ۷. کامپوننت‌های کلیدی
-Button (primary/soft/ghost/danger) · Sticker · Avatar stack · Priority pill · Status dot · Task card · Bento widget · Command palette · Sheet (موبایل) · Toast · Empty state با mascot · Jalali date picker · Progress ring
+## ۷. چیدمان اپ (وب)
+```
+┌ قاب اپ ─────────────────────────────────────────────────┐
+│ [لوگو ورک‌اسپیس ▾]   [ جستجو…  ⌘K ]   ☀︎☾ 🔔  👤👤+2 [دعوت]│
+├──────────┬──────────────────────────────────────────────┤
+│ سلام 👋  │  پنل‌های bento                                  │
+│ منو      │                                               │
+│ ● خانه   │                                               │
+│ پروژه‌ها  │                                               │
+│ …        │                                               │
+│ [کاربر]  │                                               │
+└──────────┴──────────────────────────────────────────────┘
+```
+موبایل: همان زبان؛ نوار پایین شیشه‌ای با قرص مشکی برای تب فعال و دکمه مرکزی «+» با هاله نور.
 
-## ۸. مرجع‌ها
-- dastyar.io (اسکرین‌شات ارسالی کاربر): آبی رویال، کارت‌های پاستلی، استیکر کج، ویجت روی صحنه طبیعت، باند ستاره‌ای، فوتر تیره گرد
-- مرجع‌های Dribbble / Pinterest: کاربر اسکرین‌شات می‌فرستد و این بخش به‌روز می‌شود.
+## ۸. کامپوننت‌ها
+Button (ink / lumi / soft / ghost / danger) · Pill (status, delta) · Sticker · Avatar + stack · Panel (+aurora) · KPI · HatchBars · SegmentGauge · DayArc · TaskRow · TaskCard · Board column · Drawer · Dialog · Toast (قرص مشکی) · Command palette · Tabs (segmented) · Input / Select / DatePicker شمسی · EmptyState
