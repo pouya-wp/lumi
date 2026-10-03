@@ -9,6 +9,7 @@ import {
   MoveTaskDto,
   MyTasksQuery,
   ProposalDto,
+  RangeTasksQuery,
   SetAssigneesDto,
   SetLabelsDto,
   UpdateTaskDto,
@@ -32,6 +33,11 @@ export class TasksController {
   @Get('me/tasks')
   myTasks(@CurrentUser() user: AuthUser, @Query() q: MyTasksQuery) {
     return this.tasks.myTasks(user.id, q);
+  }
+
+  @Get('workspaces/:workspaceId/tasks')
+  range(@CurrentUser() user: AuthUser, @Param('workspaceId') workspaceId: string, @Query() q: RangeTasksQuery) {
+    return this.tasks.range(workspaceId, user.id, q);
   }
 
   @Get('workspaces/:workspaceId/search')

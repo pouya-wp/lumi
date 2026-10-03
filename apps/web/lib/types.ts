@@ -92,6 +92,53 @@ export interface Task {
   counts: { subtasks: number; comments: number; attachments: number };
   createdAt: string;
   updatedAt: string;
+  recurrence: string | null;
+  customFields: Record<string, unknown> | null;
+  dependencies: { toTaskId: string; type: string }[];
+}
+
+export type FieldType = 'TEXT' | 'NUMBER' | 'MONEY' | 'DATE' | 'SELECT' | 'MULTI_SELECT' | 'USER' | 'CHECKBOX' | 'URL' | 'PROGRESS' | 'RATING';
+
+export interface CustomField {
+  id: string;
+  projectId: string;
+  name: string;
+  type: FieldType;
+  options: { items?: { id: string; name: string; color: string }[]; currency?: string } | null;
+  order: number;
+}
+
+export interface TaskFilters {
+  assigneeIds?: string[];
+  priorities?: string[];
+  labelIds?: string[];
+  categories?: string[];
+  due?: 'overdue' | 'today' | 'week' | 'none';
+  q?: string;
+}
+
+export type ViewKind = 'BOARD' | 'LIST' | 'TABLE' | 'CALENDAR' | 'TIMELINE';
+
+export interface SavedView {
+  id: string;
+  name: string;
+  type: ViewKind;
+  config: { filters?: TaskFilters };
+  shared: boolean;
+  ownerId: string;
+}
+
+export interface TimeEntry {
+  id: string;
+  taskId: string;
+  userId: string;
+  startedAt: string;
+  endedAt: string | null;
+  minutes: number | null;
+  note: string | null;
+  billable: boolean;
+  user?: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  task?: { id: string; title: string; number: number; projectId: string; project: { key: string; name: string; color: string | null; icon: string | null } };
 }
 
 export interface ChecklistItem {
@@ -106,7 +153,7 @@ export interface TaskDetail extends Task {
   parent: { id: string; title: string; number: number } | null;
   checklistItems: ChecklistItem[];
   subtasks: Task[];
-  dependencies: { type: string; to: { id: string; title: string; number: number } }[];
+  dependencies: { toTaskId: string; type: string; to: { id: string; title: string; number: number; statusId: string } }[];
   dependents: { type: string; from: { id: string; title: string; number: number } }[];
 }
 

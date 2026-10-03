@@ -8,6 +8,7 @@ import { useSession } from '@/lib/session';
 import { useTheme } from '@/lib/theme';
 import { useUi } from '@/lib/ui-state';
 import { AvatarStack, Button, cx, Icon, IconButton, Kbd, Pill } from '../ui';
+import { TimerPill } from './timer-pill';
 
 export function Topbar() {
   const { t, locale } = useT();
@@ -70,6 +71,7 @@ export function Topbar() {
       </button>
       <IconButton icon="plus" label={t('task.new')} onClick={() => openQuickAdd()} className="bg-lumi text-white shadow-[0_8px_20px_-8px_var(--lumi)] hover:bg-lumi" />
 
+      <TimerPill />
       <div className="ms-auto hidden items-center gap-1 rounded-full bg-sunken p-1 shadow-[inset_0_0_0_1px_var(--line)] md:flex">
         {(['light', 'dark'] as const).map((mode) => (
           <button

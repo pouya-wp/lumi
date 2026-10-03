@@ -106,7 +106,11 @@
     "search": "Search everything…",
     "invite": "Invite",
     "menu": "Menu",
-    "help": "Help"
+    "help": "Help",
+    "calendar": "Calendar",
+    "workload": "Workload",
+    "timesheet": "Timesheet",
+    "planning": "Planning"
   },
   "dash": {
     "welcome": "Welcome back,",
@@ -179,7 +183,15 @@
   },
   "views": {
     "board": "Board",
-    "list": "List"
+    "list": "List",
+    "table": "Table",
+    "calendar": "Calendar",
+    "timeline": "Timeline",
+    "saved": "Saved views",
+    "saveView": "Save this view",
+    "viewName": "View name",
+    "shared": "Share with team",
+    "noViews": "No saved views yet"
   },
   "myTasks": {
     "title": "My tasks",
@@ -320,5 +332,95 @@
       }
     ],
     "previewTag": "Live from the dashboard"
+  },
+  "filters": {
+    "title": "Filter",
+    "assignee": "Assignee",
+    "priority": "Priority",
+    "label": "Label",
+    "status": "Status",
+    "due": "Due",
+    "overdue": "Overdue",
+    "today": "Today",
+    "week": "This week",
+    "none": "No due date",
+    "clear": "Clear",
+    "search": "Search tasks…",
+    "me": "Me"
+  },
+  "categories": {
+    "BACKLOG": "Backlog",
+    "TODO": "To do",
+    "IN_PROGRESS": "In progress",
+    "REVIEW": "Review",
+    "DONE": "Done",
+    "CANCELED": "Canceled"
+  },
+  "fields": {
+    "title": "Custom fields",
+    "add": "New field",
+    "name": "Field name",
+    "type": "Type",
+    "options": "Options (comma separated)",
+    "create": "Add",
+    "empty": "—",
+    "types": {
+      "TEXT": "Text",
+      "NUMBER": "Number",
+      "MONEY": "Money",
+      "DATE": "Date",
+      "SELECT": "Select",
+      "MULTI_SELECT": "Multi-select",
+      "USER": "Person",
+      "CHECKBOX": "Checkbox",
+      "URL": "Link",
+      "PROGRESS": "Progress",
+      "RATING": "Rating"
+    }
+  },
+  "recur": {
+    "title": "Repeat",
+    "none": "Does not repeat",
+    "daily": "Every day",
+    "weekdays": "Weekdays (Mon–Fri)",
+    "weekly": "Every week",
+    "biweekly": "Every 2 weeks",
+    "monthly": "Every month",
+    "monthEnd": "Last day of month",
+    "yearly": "Every year"
+  },
+  "deps": {
+    "title": "Dependencies",
+    "blocks": "Blocks",
+    "blockedBy": "Blocked by",
+    "relates": "Related",
+    "add": "Add dependency (key or title)…",
+    "cycle": "This would create a cycle"
+  },
+  "time": {
+    "title": "Time",
+    "start": "Start timer",
+    "stop": "Stop",
+    "log": "Log time",
+    "minutes": "minutes",
+    "note": "Note",
+    "total": "Total",
+    "running": "Tracking time",
+    "timesheet": "Timesheet",
+    "week": "Week",
+    "task": "Task",
+    "sum": "Total",
+    "empty": "No time logged this week",
+    "everyone": "Everyone"
+  },
+  "planning": {
+    "calendar": "Calendar",
+    "workload": "Workload",
+    "capacity": "{n}h daily capacity",
+    "unscheduled": "Unscheduled",
+    "today": "Today",
+    "noTasks": "Nothing on this day",
+    "dragHint": "Drag tasks to reschedule",
+    "holiday": "Holiday"
   }
 }

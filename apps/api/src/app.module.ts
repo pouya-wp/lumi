@@ -8,6 +8,9 @@ import { AuthModule } from './auth/auth.module';
 import { CommentsModule } from './comments/comments.module';
 import { AuthGuard } from './common/auth.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { FieldsModule } from './fields/fields.module';
+import { TimeModule } from './time/time.module';
+import { ViewsModule } from './views/views.module';
 import { HealthModule } from './health/health.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -37,6 +40,9 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     TasksModule,
     CommentsModule,
     DashboardModule,
+    FieldsModule,
+    ViewsModule,
+    TimeModule,
     ActivityModule,
     RealtimeModule,
   ],

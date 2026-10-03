@@ -19,6 +19,7 @@ export function useTaskActions() {
     qc.invalidateQueries({ queryKey: ['dashboard'] });
     qc.invalidateQueries({ queryKey: ['projects'] });
     qc.invalidateQueries({ queryKey: ['activity', task.id] });
+    qc.invalidateQueries({ queryKey: ['range'] });
   };
   const onError = (e: Error) => toast(e.message || t('common.error'), '⚠️');
 
