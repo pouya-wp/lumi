@@ -1,38 +1,25 @@
-# Lumi API + PostgreSQL for a small shared VPS.
-# - Publishes NO host ports: HTTPS reaches the API only through the outbound Cloudflare Tunnel.
-# - Own network and named volumes; nothing outside this project is touched.
-# - Memory-capped so the host's existing services keep their headroom.
-# Managed by install.sh (project name "lumi-vps"); config lives in /opt/lumi/.env.
+# Lumi on a small shared VPS — the whole app (web, API, database) behind ONE port.
+# - Only ${LUMI_PORT} is published (default 8088); nginx, 80/443 and other services are not touched.
+# - Own network and named volumes; memory-capped so existing services keep their headroom.
+# Managed by install.sh (project "lumi-vps"); config lives in /opt/lumi/.env.
 name: lumi-vps
 
 services:
-  postgres:
-    image: ${LUMI_POSTGRES_IMAGE:-ghcr.io/pouya-wp/lumi-postgres:16}
+  proxy:
+    image: ${LUMI_CADDY_IMAGE:-ghcr.io/pouya-wp/lumi-caddy:2}
+    restart: unless-stopped
+    depends_on: [web, api]
+    ports: ["${LUMI_PORT:-8088}:80"]
+    volumes: [/opt/lumi/Caddyfile:/etc/caddy/Caddyfile:ro]
+    mem_limit: 64m
+    networks: [lumi]
+
+  web:
+    image: ${LUMI_WEB_IMAGE:-ghcr.io/pouya-wp/lumi-web:latest}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: lumi
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?missing POSTGRES_PASSWORD}
-      POSTGRES_DB: lumi
-    command:
-      - postgres
-      - -c
-      - shared_buffers=64MB
-      - -c
-      - effective_cache_size=192MB
-      - -c
-      - work_mem=4MB
-      - -c
-      - maintenance_work_mem=32MB
-      - -c
-      - max_connections=30
-      - -c
-      - wal_buffers=4MB
-    volumes: [pgdata:/var/lib/postgresql/data]
+      NODE_OPTIONS: --max-old-space-size=192
     mem_limit: 256m
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lumi"]
-      interval: 5s
-      retries: 30
     networks: [lumi]
 
   api:
@@ -43,9 +30,8 @@ services:
     environment:
       DATABASE_URL: postgresql://lumi:${POSTGRES_PASSWORD}@postgres:5432/lumi?connection_limit=5
       JWT_SECRET: ${JWT_SECRET:?missing JWT_SECRET}
-      PUBLIC_API_URL: https://${LUMI_API_DOMAIN:?missing LUMI_API_DOMAIN}
-      PUBLIC_WEB_URL: https://${LUMI_WEB_DOMAIN:?missing LUMI_WEB_DOMAIN}
-      CORS_ORIGINS: https://${LUMI_WEB_DOMAIN},${EXTRA_CORS_ORIGINS:-}
+      PUBLIC_API_URL: ${LUMI_PUBLIC_URL:?missing LUMI_PUBLIC_URL}
+      PUBLIC_WEB_URL: ${LUMI_PUBLIC_URL}
       ALLOW_SIGNUP: ${ALLOW_SIGNUP:-false}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
@@ -54,15 +40,20 @@ services:
     mem_limit: 384m
     networks: [lumi]
 
-  tunnel:
-    image: ${LUMI_CLOUDFLARED_IMAGE:-ghcr.io/pouya-wp/lumi-cloudflared:latest}
+  postgres:
+    image: ${LUMI_POSTGRES_IMAGE:-ghcr.io/pouya-wp/lumi-postgres:16}
     restart: unless-stopped
-    depends_on: [api]
-    # http2 instead of QUIC: UDP to Cloudflare is often blocked on Iranian networks.
-    command: tunnel --no-autoupdate --protocol http2 run
     environment:
-      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?missing TUNNEL_TOKEN}
-    mem_limit: 64m
+      POSTGRES_USER: lumi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?missing POSTGRES_PASSWORD}
+      POSTGRES_DB: lumi
+    command: [postgres, -c, shared_buffers=64MB, -c, effective_cache_size=192MB, -c, work_mem=4MB, -c, maintenance_work_mem=32MB, -c, max_connections=30, -c, wal_buffers=4MB]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumi"]
+      interval: 5s
+      retries: 30
     networks: [lumi]
 
   backup:

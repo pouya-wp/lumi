@@ -1,0 +1,12 @@
+# One port for everything: the API (and its realtime sockets) under /api and /socket.io, the web app for the rest.
+{
+	auto_https off
+	admin off
+}
+
+:80 {
+	encode zstd gzip
+	@api path /api/* /socket.io/*
+	reverse_proxy @api api:4000
+	reverse_proxy web:3000
+}

@@ -7,12 +7,7 @@ export function Logo({ href }: { href?: string }) {
   const { t, locale } = useT();
   return (
     <Link href={href ?? `/${locale}`} className="flex items-center gap-2.5 font-bold">
-      <span className="relative grid size-9 place-items-center rounded-[12px] bg-ink text-on-ink">
-        <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden>
-          <path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z" />
-        </svg>
-        <span className="absolute -top-0.5 -end-0.5 size-2.5 rounded-full bg-lumi shadow-[0_0_10px_var(--lumi)]" />
-      </span>
+      <img src="/icons/icon-192.png" alt="" width={36} height={36} className="size-9 drop-shadow-[0_6px_14px_rgba(79,91,255,.35)]" />
       <span className="text-lg">{t('brand')}</span>
     </Link>
   );
