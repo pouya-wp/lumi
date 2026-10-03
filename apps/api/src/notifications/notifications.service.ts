@@ -13,7 +13,8 @@ export type NotificationType =
   | 'task.status'
   | 'comment.mention'
   | 'comment.reply'
-  | 'workspace.joined';
+  | 'workspace.joined'
+  | 'automation';
 
 @Injectable()
 export class NotificationsService {

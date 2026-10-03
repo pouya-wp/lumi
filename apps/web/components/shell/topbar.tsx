@@ -8,6 +8,7 @@ import { useSession } from '@/lib/session';
 import { useTheme } from '@/lib/theme';
 import { useUi } from '@/lib/ui-state';
 import { AvatarStack, Button, cx, Icon, IconButton, Kbd, Pill } from '../ui';
+import { useAiPanel } from './ai-panel';
 import { TimerPill } from './timer-pill';
 
 export function Topbar() {
@@ -18,6 +19,7 @@ export function Topbar() {
   const detail = useWorkspace(workspace?.id);
   const unread = useUnreadCount();
   const [switcher, setSwitcher] = useState(false);
+  const ai = useAiPanel();
 
   return (
     <header className="flex h-[72px] items-center gap-3 px-4 lg:px-5">
@@ -71,6 +73,15 @@ export function Topbar() {
       </button>
       <IconButton icon="plus" label={t('task.new')} onClick={() => openQuickAdd()} className="bg-lumi text-white shadow-[0_8px_20px_-8px_var(--lumi)] hover:bg-lumi" />
 
+      <button
+        onClick={() => ai.open()}
+        className="group relative hidden h-11 items-center gap-2 overflow-hidden rounded-full bg-ink ps-3 pe-4 text-sm text-on-ink shadow-panel sm:flex"
+      >
+        <span className="absolute inset-0 bg-[conic-gradient(from_0deg,transparent,rgba(118,128,255,.55),transparent_40%)] opacity-0 transition group-hover:opacity-100 group-hover:animate-spin [animation-duration:3s]" />
+        <span className="absolute inset-[1.5px] rounded-full bg-ink" />
+        <Icon name="sparkle" size={16} className="relative" />
+        <span className="relative">{t('ai.assistant')}</span>
+      </button>
       <TimerPill />
       <div className="ms-auto hidden items-center gap-1 rounded-full bg-sunken p-1 shadow-[inset_0_0_0_1px_var(--line)] md:flex">
         {(['light', 'dark'] as const).map((mode) => (

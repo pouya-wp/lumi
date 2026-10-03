@@ -4,6 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { get } from './api';
 import type {
   Activity,
+  AutomationRule,
+  AutomationRun,
+  PlanBlock,
   Comment,
   CustomField,
   FocusStats,
@@ -54,6 +57,10 @@ export const keys = {
   milestones: (projectId: string) => ['milestones', projectId] as const,
   roadmap: (wid: string) => ['roadmap', wid] as const,
   focus: ['focus'] as const,
+  automations: (projectId: string) => ['automations', projectId] as const,
+  automationRuns: (id: string) => ['automationRuns', id] as const,
+  aiStatus: ['aiStatus'] as const,
+  plan: (date: string) => ['plan', date] as const,
 };
 
 const enabled = (...ids: (string | null | undefined)[]) => ids.every(Boolean);
@@ -157,3 +164,10 @@ export const useMilestones = (projectId?: string | null) =>
 export const useRoadmap = (wid?: string | null) =>
   useQuery({ queryKey: keys.roadmap(wid!), queryFn: () => get<Milestone[]>(`/workspaces/${wid}/roadmap`), enabled: enabled(wid) });
 export const useFocus = () => useQuery({ queryKey: keys.focus, queryFn: () => get<FocusStats>('/me/focus') });
+
+export const useAutomations = (projectId?: string | null) =>
+  useQuery({ queryKey: keys.automations(projectId!), queryFn: () => get<AutomationRule[]>(`/projects/${projectId}/automations`), enabled: enabled(projectId) });
+export const useAutomationRuns = (id?: string | null) =>
+  useQuery({ queryKey: keys.automationRuns(id!), queryFn: () => get<AutomationRun[]>(`/automations/${id}/runs`), enabled: enabled(id) });
+export const useAiStatus = () => useQuery({ queryKey: keys.aiStatus, queryFn: () => get<{ enabled: boolean; model: string | null }>('/ai/status'), staleTime: 300_000 });
+export const usePlan = (date: string) => useQuery({ queryKey: keys.plan(date), queryFn: () => get<PlanBlock[]>(`/me/plan?date=${date}`) });

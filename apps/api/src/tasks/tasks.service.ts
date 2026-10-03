@@ -3,6 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { nextOccurrence, parseRRule, rankBetween } from '@lumi/shared';
 import { Prisma, type AssigneeRole, type Project, type StatusCategory, type Task } from '@prisma/client';
 import { AccessService } from '../common/access.service';
+import { automationDepth } from '../common/automation-context';
 import { Events, type TaskEvent } from '../common/events';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -618,7 +619,7 @@ export class TasksService {
   }
 
   private emit(event: string, project: Project, taskId: string, actorId: string, action: string, diff?: Record<string, unknown>) {
-    this.events.emit(event, { workspaceId: project.workspaceId, projectId: project.id, taskId, actorId, action, diff } satisfies TaskEvent);
+    this.events.emit(event, { workspaceId: project.workspaceId, projectId: project.id, taskId, actorId, action, diff, depth: automationDepth() } satisfies TaskEvent);
   }
 }
 

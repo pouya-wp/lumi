@@ -12,6 +12,7 @@ import { useTaskActions } from '@/lib/task-actions';
 import { useToast } from '@/lib/toast';
 import { useUi } from '@/lib/ui-state';
 import type { TaskDetail } from '@/lib/types';
+import { MarkdownLite } from '@/lib/markdown-lite';
 import { Avatar, Button, cx, Icon, IconButton } from '../ui';
 import { FieldCell, FieldIcon } from './table-view';
 
@@ -274,5 +275,64 @@ export function TimeSection({ task }: { task: TaskDetail }) {
         </div>
       )}
     </Section>
+  );
+}
+
+/** AI helpers in the task drawer: subtask breakdown (preview → create) and a discussion summary. */
+export function AiSection({ task }: { task: TaskDetail }) {
+  const { t } = useT();
+  const qc = useQueryClient();
+  const toast = useToast();
+  const [preview, setPreview] = useState<{ title: string; estimateMin: number }[] | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
+  const onError = (e: Error) => toast(e instanceof ApiError && e.status === 503 ? t('ai.disabled') : e.message, '⚠️');
+  const breakdown = useMutation({
+    mutationFn: (apply: boolean) => post<{ subtasks: { title: string; estimateMin: number }[] }>(`/tasks/${task.id}/ai/breakdown`, { apply }),
+    onSuccess: (r, apply) => {
+      if (apply) {
+        setPreview(null);
+        qc.invalidateQueries({ queryKey: keys.task(task.id) });
+        qc.invalidateQueries({ queryKey: keys.tasks(task.projectId) });
+      } else setPreview(r.subtasks);
+    },
+    onError,
+  });
+  const summarize = useMutation({ mutationFn: () => post<{ summary: string }>(`/tasks/${task.id}/ai/summary`), onSuccess: (r) => setSummary(r.summary), onError });
+
+  return (
+    <div className="mt-6">
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="soft" onClick={() => breakdown.mutate(false)} loading={breakdown.isPending && !preview}>
+          {t('ai.breakdown')}
+        </Button>
+        <Button size="sm" variant="soft" onClick={() => summarize.mutate()} loading={summarize.isPending}>
+          {t('ai.summary')}
+        </Button>
+      </div>
+      {preview && (
+        <div className="rise mt-3 rounded-[18px] bg-lumi/[.06] p-3 shadow-[inset_0_0_0_1px_color-mix(in_oklab,var(--lumi)_25%,transparent)]">
+          {preview.map((s, i) => (
+            <div key={i} className="flex items-center gap-2 px-1 py-1.5 text-sm">
+              <span className="text-lumi">✦</span>
+              <span className="flex-1">{s.title}</span>
+              <span className="text-[11px] text-muted">{s.estimateMin}′</span>
+            </div>
+          ))}
+          <div className="mt-2 flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setPreview(null)}>
+              {t('common.cancel')}
+            </Button>
+            <Button size="sm" variant="ink" onClick={() => breakdown.mutate(true)} loading={breakdown.isPending}>
+              {t('ai.apply')}
+            </Button>
+          </div>
+        </div>
+      )}
+      {summary && (
+        <div className="rise mt-3 rounded-[18px] bg-sunken p-4 text-sm shadow-[inset_0_0_0_1px_var(--line)]">
+          <MarkdownLite text={summary} />
+        </div>
+      )}
+    </div>
   );
 }

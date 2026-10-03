@@ -15,6 +15,8 @@ export interface TaskEvent {
   actorId: string;
   action: string;
   diff?: Record<string, unknown>;
+  /** >0 when the change was made by an automation rule. */
+  depth?: number;
 }
 
 export interface CommentEvent {
@@ -23,6 +25,7 @@ export interface CommentEvent {
   taskId: string;
   commentId: string;
   actorId: string;
+  depth?: number;
 }
 
 export interface NotificationEvent {

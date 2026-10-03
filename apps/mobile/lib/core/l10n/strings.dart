@@ -29,24 +29,24 @@ class Strings {
     });
   }
 
-  dynamic raw(String key) {
-    final dot = key.indexOf('.');
-    if (dot < 0) return _dict[key];
-    final section = _dict[key.substring(0, dot)];
-    if (section is! Map) return null;
-    final rest = key.substring(dot + 1);
-    if (section.containsKey(rest)) return section[rest];
-    dynamic node = section;
-    for (final part in rest.split('.')) {
-      if (node is Map) {
-        node = node[part];
-      } else if (node is List) {
-        node = node[int.tryParse(part) ?? -1];
-      } else {
-        return null;
+  /// Resolves dotted keys whose segments may contain dots (e.g. "notif.task.assigned"), longest match first.
+  dynamic raw(String key) => _resolve(_dict, key.split('.'));
+
+  dynamic _resolve(dynamic node, List<String> parts) {
+    if (parts.isEmpty) return node;
+    if (node is List) {
+      final i = int.tryParse(parts.first);
+      return i == null || i >= node.length ? null : _resolve(node[i], parts.sublist(1));
+    }
+    if (node is! Map) return null;
+    for (var i = parts.length; i > 0; i--) {
+      final k = parts.sublist(0, i).join('.');
+      if (node.containsKey(k)) {
+        final found = _resolve(node[k], parts.sublist(i));
+        if (found != null) return found;
       }
     }
-    return node;
+    return null;
   }
 
   /// Number in the locale's digits.

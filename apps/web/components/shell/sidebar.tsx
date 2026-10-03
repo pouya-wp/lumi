@@ -56,6 +56,7 @@ export function Sidebar() {
 
       <Section title={t('nav2.menu')}>
         {item(base, 'home', t('nav2.home'), undefined, true)}
+        {item(`${base}/today`, 'sparkle', t('nav2.today'))}
         {item(`${base}/my-tasks`, 'checkCircle', t('nav2.myTasks'), today.data?.length)}
         {item(`${base}/inbox`, 'inbox', t('nav2.inbox'), unread.data?.count)}
         {item(`${base}/team`, 'users', t('nav2.team'))}
