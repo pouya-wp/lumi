@@ -95,6 +95,8 @@ export interface Task {
   recurrence: string | null;
   customFields: Record<string, unknown> | null;
   dependencies: { toTaskId: string; type: string }[];
+  sprintId: string | null;
+  milestoneId: string | null;
 }
 
 export type FieldType = 'TEXT' | 'NUMBER' | 'MONEY' | 'DATE' | 'SELECT' | 'MULTI_SELECT' | 'USER' | 'CHECKBOX' | 'URL' | 'PROGRESS' | 'RATING';
@@ -117,7 +119,7 @@ export interface TaskFilters {
   q?: string;
 }
 
-export type ViewKind = 'BOARD' | 'LIST' | 'TABLE' | 'CALENDAR' | 'TIMELINE';
+export type ViewKind = 'BOARD' | 'LIST' | 'TABLE' | 'CALENDAR' | 'TIMELINE' | 'SPRINTS';
 
 export interface SavedView {
   id: string;
@@ -203,4 +205,83 @@ export interface Dashboard {
   myFocus: Task[];
   upcoming: Task[];
   activity: Activity[];
+}
+
+export interface Sprint {
+  id: string;
+  projectId: string;
+  name: string;
+  goal: string | null;
+  startAt: string;
+  endAt: string;
+  state: 'PLANNED' | 'ACTIVE' | 'COMPLETED';
+  retro: { wentWell?: string[]; improve?: string[]; actions?: string[] } | null;
+  summary: { committedPoints: number; completedPoints: number; committedTasks: number; completedTasks: number; carriedOver: number } | null;
+  stats: { tasks: number; done: number; points: number; donePoints: number };
+}
+
+export interface SprintReport {
+  total: number;
+  series: { date: string; ideal: number; actual: number | null }[];
+  velocity: { id: string; name: string; committedPoints: number; completedPoints: number }[];
+  averageVelocity: number | null;
+}
+
+export type GoalStatus = 'ON_TRACK' | 'AT_RISK' | 'OFF_TRACK';
+
+export interface KeyResult {
+  id: string;
+  title: string;
+  type: 'NUMBER' | 'PERCENT' | 'CURRENCY' | 'TASKS';
+  start: number;
+  target: number;
+  current: number;
+  unit: string | null;
+  progress: number;
+  status: GoalStatus;
+  tasks: { id: string; title: string; key: string; completedAt: string | null }[];
+  checkIns: { id: string; value: number; confidence: number; note: string | null; createdAt: string; user: { id: string; name: string } }[];
+}
+
+export interface Goal {
+  id: string;
+  title: string;
+  description: string | null;
+  period: string;
+  emoji: string | null;
+  owner: { id: string; name: string; avatarUrl: string | null };
+  progress: number;
+  status: GoalStatus;
+  keyResults: KeyResult[];
+}
+
+export interface Habit {
+  id: string;
+  title: string;
+  emoji: string | null;
+  color: string | null;
+  days: number[];
+  logs: string[];
+  streak: number;
+  best: number;
+}
+
+export interface Milestone {
+  id: string;
+  projectId: string;
+  title: string;
+  description: string | null;
+  dueAt: string;
+  color: string | null;
+  doneAt: string | null;
+  total: number;
+  done: number;
+  project?: { id: string; name: string; icon: string | null; color: string | null; key: string };
+}
+
+export interface FocusStats {
+  current: { id: string; startedAt: string; plannedMin: number; kind: 'FOCUS' | 'SHORT_BREAK' | 'LONG_BREAK'; task: { id: string; title: string } | null } | null;
+  today: { count: number; minutes: number };
+  streak: number;
+  days: { date: string; count: number; minutes: number }[];
 }

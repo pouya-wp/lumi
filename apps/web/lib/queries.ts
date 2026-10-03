@@ -6,7 +6,13 @@ import type {
   Activity,
   Comment,
   CustomField,
+  FocusStats,
+  Goal,
+  Habit,
+  Milestone,
   SavedView,
+  Sprint,
+  SprintReport,
   TimeEntry,
   Dashboard,
   Label,
@@ -41,6 +47,13 @@ export const keys = {
   timer: ['timer'] as const,
   taskTime: (taskId: string) => ['taskTime', taskId] as const,
   timesheet: (wid: string, from: string, to: string, userId: string) => ['timesheet', wid, from, to, userId] as const,
+  sprints: (projectId: string) => ['sprints', projectId] as const,
+  sprintReport: (id: string) => ['sprintReport', id] as const,
+  goals: (wid: string, period: string) => ['goals', wid, period] as const,
+  habits: (wid: string) => ['habits', wid] as const,
+  milestones: (projectId: string) => ['milestones', projectId] as const,
+  roadmap: (wid: string) => ['roadmap', wid] as const,
+  focus: ['focus'] as const,
 };
 
 const enabled = (...ids: (string | null | undefined)[]) => ids.every(Boolean);
@@ -117,3 +130,30 @@ export const useTimesheet = (wid: string | null | undefined, from: Date, to: Dat
     enabled: enabled(wid),
     placeholderData: (prev) => prev,
   });
+
+export const useSprints = (projectId?: string | null) =>
+  useQuery({ queryKey: keys.sprints(projectId!), queryFn: () => get<Sprint[]>(`/projects/${projectId}/sprints`), enabled: enabled(projectId) });
+export const useSprintReport = (id?: string | null) =>
+  useQuery({ queryKey: keys.sprintReport(id!), queryFn: () => get<SprintReport>(`/sprints/${id}/report`), enabled: enabled(id) });
+export const useGoals = (wid: string | null | undefined, period: string) =>
+  useQuery({
+    queryKey: keys.goals(wid!, period),
+    queryFn: () => get<{ periods: string[]; goals: Goal[] }>(`/workspaces/${wid}/goals${period ? `?period=${encodeURIComponent(period)}` : ''}`),
+    enabled: enabled(wid),
+    placeholderData: (prev) => prev,
+  });
+export const useHabits = (wid?: string | null) =>
+  useQuery({
+    queryKey: keys.habits(wid!),
+    queryFn: () => {
+      const d = new Date();
+      const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      return get<Habit[]>(`/me/habits?workspaceId=${wid}&today=${today}`);
+    },
+    enabled: enabled(wid),
+  });
+export const useMilestones = (projectId?: string | null) =>
+  useQuery({ queryKey: keys.milestones(projectId!), queryFn: () => get<Milestone[]>(`/projects/${projectId}/milestones`), enabled: enabled(projectId) });
+export const useRoadmap = (wid?: string | null) =>
+  useQuery({ queryKey: keys.roadmap(wid!), queryFn: () => get<Milestone[]>(`/workspaces/${wid}/roadmap`), enabled: enabled(wid) });
+export const useFocus = () => useQuery({ queryKey: keys.focus, queryFn: () => get<FocusStats>('/me/focus') });

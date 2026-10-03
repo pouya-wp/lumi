@@ -36,6 +36,7 @@ export class CreateTaskDto {
   @IsOptional() @IsArray() @ArrayMaxSize(20) @IsString({ each: true }) labelNames?: string[];
   @IsOptional() @IsString() @MaxLength(200) recurrence?: string;
   @IsOptional() @IsObject() customFields?: Record<string, unknown>;
+  @IsOptional() @IsString() sprintId?: string;
 }
 
 export class UpdateTaskDto {
@@ -52,6 +53,8 @@ export class UpdateTaskDto {
   @IsOptional() @IsObject() customFields?: Record<string, unknown>;
   /** RRULE subset (see packages/shared recurrence.ts); null stops repeating. */
   @IsOptional() @ValidateIf((_, v) => v !== null) @IsString() @MaxLength(200) recurrence?: string | null;
+  @IsOptional() @ValidateIf((_, v) => v !== null) @IsString() sprintId?: string | null;
+  @IsOptional() @ValidateIf((_, v) => v !== null) @IsString() milestoneId?: string | null;
 }
 
 export class ListTasksQuery {
