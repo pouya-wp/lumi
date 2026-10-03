@@ -8,6 +8,7 @@ import { useSession } from '@/lib/session';
 import { useTheme } from '@/lib/theme';
 import { useUi } from '@/lib/ui-state';
 import { cx, Icon, Kbd, PriorityGlyph, StatusDot, type IconName } from '../ui';
+import { useAiPanel } from './ai-panel';
 import { Dialog } from '../ui/dialog';
 
 interface Item {
@@ -41,6 +42,7 @@ function Palette({ onClose }: { onClose: () => void }) {
   const { workspace } = useSession();
   const { openTask, openQuickAdd } = useUi();
   const { toggle } = useTheme();
+  const ai = useAiPanel();
   const router = useRouter();
   const [q, setQ] = useState('');
   const [active, setActive] = useState(0);
@@ -60,6 +62,9 @@ function Palette({ onClose }: { onClose: () => void }) {
       run,
       hint: hint && <Kbd>{hint}</Kbd>,
     });
+    const askAi: Item[] = q.trim()
+      ? [{ id: 'ai', group: t('ai.assistant'), label: `✨ ${q}`, icon: <Icon name="sparkle" size={16} />, run: () => { onClose(); ai.open(q); } }]
+      : [];
     const actions = [
       action('new', 'plus', t('palette.newTask'), () => {
         onClose();
@@ -72,6 +77,11 @@ function Palette({ onClose }: { onClose: () => void }) {
         toggle();
         onClose();
       }),
+      action('ai', 'sparkle', t('ai.assistant'), () => {
+        onClose();
+        ai.open();
+      }),
+      action('today', 'calendar', t('ai.planDay'), go('/today')),
     ].filter((a) => !q || String(a.label).toLowerCase().includes(q.toLowerCase()));
 
     const tasks: Item[] = (q ? (search.data?.tasks ?? []) : []).map((task) => ({
@@ -97,8 +107,8 @@ function Palette({ onClose }: { onClose: () => void }) {
       icon: <span>{p.icon ?? '◆'}</span>,
       run: go(`/projects/${p.id}`),
     }));
-    return [...tasks, ...projects, ...actions];
-  }, [q, search.data, t, locale, router, onClose, openQuickAdd, openTask, toggle]);
+    return [...tasks, ...projects, ...actions, ...askAi];
+  }, [q, search.data, t, locale, router, onClose, openQuickAdd, openTask, toggle, ai]);
 
   useEffect(() => setActive(0), [q]);
   useEffect(() => {

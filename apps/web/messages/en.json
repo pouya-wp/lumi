@@ -115,7 +115,8 @@
     "goals": "OKRs",
     "focus": "Focus",
     "habits": "Habits",
-    "roadmap": "Roadmap"
+    "roadmap": "Roadmap",
+    "today": "My day"
   },
   "dash": {
     "welcome": "Welcome back,",
@@ -197,7 +198,8 @@
     "viewName": "View name",
     "shared": "Share with team",
     "noViews": "No saved views yet",
-    "sprints": "Sprints"
+    "sprints": "Sprints",
+    "automations": "Automations"
   },
   "myTasks": {
     "title": "My tasks",
@@ -226,7 +228,8 @@
     "task.status": "moved “{title}” to {status}",
     "comment.mention": "mentioned you in “{title}”",
     "comment.reply": "replied to you in “{title}”",
-    "workspace.joined": "joined the workspace"
+    "workspace.joined": "joined the workspace",
+    "automation": "automation updated “{title}”"
   },
   "activity": {
     "created": "created",
@@ -547,5 +550,101 @@
     "next": "Next actions",
     "waiting": "Waiting for",
     "someday": "Someday / maybe"
+  },
+  "auto": {
+    "title": "Automations",
+    "new": "New rule",
+    "name": "Rule name",
+    "when": "When",
+    "if": "If",
+    "then": "Then",
+    "addCondition": "Condition",
+    "addAction": "Action",
+    "runs": "Runs",
+    "test": "Test on a task",
+    "matches": "This rule would run on this task ✅",
+    "noMatch": "Conditions don't match",
+    "templates": "Templates",
+    "empty": "No rules yet. Start from a template 👇",
+    "timesRun": "ran {n} times",
+    "enabled": "Enabled",
+    "triggers": {
+      "task.created": "Task created",
+      "status.changed": "Status changed",
+      "priority.changed": "Priority changed",
+      "assignee.added": "Assignee added",
+      "comment.created": "Comment added",
+      "due.approaching": "Due date approaching"
+    },
+    "fields": {
+      "priority": "Priority",
+      "statusCategory": "Status category",
+      "assigneeId": "Assignee",
+      "labelId": "Label",
+      "title": "Title",
+      "hasDue": "Has due date",
+      "unassigned": "Unassigned"
+    },
+    "ops": {
+      "eq": "is",
+      "neq": "is not",
+      "contains": "contains"
+    },
+    "actions": {
+      "set_status": "Set status",
+      "set_priority": "Set priority",
+      "assign": "Assign to",
+      "add_label": "Add label",
+      "set_due": "Set due date",
+      "create_subtask": "Create subtask",
+      "add_checklist": "Add checklist",
+      "comment": "Comment",
+      "notify": "Notify",
+      "move_to_sprint": "Move to active sprint",
+      "webhook": "Send webhook"
+    },
+    "toCategory": "to category",
+    "hours": "hours before",
+    "inDays": "days from now",
+    "text": "Text",
+    "url": "https URL",
+    "items": "Items (comma separated)",
+    "to": "Recipient",
+    "assignees": "Assignees",
+    "creator": "Creator",
+    "tpl": {
+      "urgent": "🚨 Urgent task → assign me and notify",
+      "done": "✅ Done → create a review subtask",
+      "review": "👀 Moved to review → comment",
+      "due": "⏰ 24h before due → high priority",
+      "bug": "🐞 Title has “bug” → label and checklist"
+    }
+  },
+  "ai": {
+    "assistant": "Lumi assistant",
+    "ask": "Ask Lumi…",
+    "placeholder": "e.g. What is overdue this week?",
+    "thinking": "Thinking…",
+    "disabled": "AI is not enabled yet. Set OPENAI_API_KEY on the server.",
+    "suggestions": [
+      "What should I focus on today?",
+      "What's overdue and who owns it?",
+      "How is the active sprint going?",
+      "Summarize the team's week"
+    ],
+    "breakdown": "✨ Break into subtasks",
+    "summary": "✨ Smart summary",
+    "apply": "Create all",
+    "parse": "✨ With AI",
+    "standup": "Today's standup",
+    "copy": "Copy",
+    "copied": "Copied",
+    "planDay": "Plan my day",
+    "today": "My day",
+    "replan": "Re-plan",
+    "lunch": "Lunch 🍽️",
+    "noPlan": "No plan for today yet",
+    "planHint": "Lumi schedules your tasks into working hours by priority, due date and dependencies",
+    "new": "New chat"
   }
 }

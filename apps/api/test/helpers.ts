@@ -33,3 +33,18 @@ export async function signUp(app: INestApplication, name = 'User', extra: Record
 }
 
 export const tick = () => new Promise((r) => setTimeout(r, 50));
+
+/** Polls until the check passes (for async event listeners). */
+export async function eventually<T>(check: () => Promise<T>, timeoutMs = 3000): Promise<T> {
+  const start = Date.now();
+  let last: unknown;
+  while (Date.now() - start < timeoutMs) {
+    try {
+      return await check();
+    } catch (e) {
+      last = e;
+      await new Promise((r) => setTimeout(r, 60));
+    }
+  }
+  throw last;
+}

@@ -38,14 +38,22 @@ export function useT() {
   return { t, raw, locale, dir: locale === 'fa' ? ('rtl' as const) : ('ltr' as const) };
 }
 
-/** Resolves "section.key", where the key itself may contain dots (e.g. "notif.task.assigned"). */
+/** Resolves dotted keys where segments may themselves contain dots (e.g. "auto.triggers.task.created"). */
 function lookup(dict: Dict, key: string): unknown {
-  const [section, ...rest] = key.split('.');
-  const node = (dict as Record<string, unknown>)[section] as Record<string, unknown> | undefined;
-  if (!node || !rest.length) return node;
-  const flat = node[rest.join('.')];
-  if (flat !== undefined) return flat;
-  return rest.reduce<unknown>((n, part) => (n as Record<string, unknown> | undefined)?.[part], node);
+  const resolve = (node: unknown, parts: string[]): unknown => {
+    if (!parts.length) return node;
+    if (node === null || typeof node !== 'object') return undefined;
+    // Prefer the longest matching segment so keys like "task.created" win over nesting.
+    for (let i = parts.length; i > 0; i--) {
+      const k = parts.slice(0, i).join('.');
+      if (k in (node as Record<string, unknown>)) {
+        const found = resolve((node as Record<string, unknown>)[k], parts.slice(i));
+        if (found !== undefined) return found;
+      }
+    }
+    return undefined;
+  };
+  return resolve(dict, key.split('.'));
 }
 
 export function num(n: number | string, locale: Locale) {

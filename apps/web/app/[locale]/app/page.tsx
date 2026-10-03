@@ -95,6 +95,11 @@ export default function DashboardPage() {
             <p className="mt-2 text-sm text-muted">{longToday(locale)}</p>
           </div>
           <DayArc />
+          <Link href={`/${locale}/app/today`}>
+            <Button variant="soft">
+              <Icon name="sparkle" size={15} /> {t('ai.planDay')}
+            </Button>
+          </Link>
           <Button variant="ink" onClick={() => openQuickAdd()}>
             <Icon name="plus" size={16} /> {t('task.new')}
           </Button>

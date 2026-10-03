@@ -3,10 +3,10 @@
 import { parseQuickAdd } from '@lumi/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState, type FormEvent } from 'react';
-import { post } from '@/lib/api';
+import { ApiError, post } from '@/lib/api';
 import { formatDate, formatTime } from '@/lib/format';
 import { useT } from '@/lib/i18n-client';
-import { useProjects, useWorkspace } from '@/lib/queries';
+import { useAiStatus, useProjects, useWorkspace } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { useToast } from '@/lib/toast';
 import { useUi } from '@/lib/ui-state';
@@ -32,23 +32,38 @@ function QuickAddDialog({ quickAdd }: { quickAdd: NonNullable<ReturnType<typeof 
   const [projectId, setProjectId] = useState(quickAdd.projectId);
   const project = projects.data?.find((p) => p.id === projectId) ?? projects.data?.[0];
 
-  const parsed = useMemo(() => parseQuickAdd(text), [text]);
-  const assignees = parsed.mentions
+  const aiStatus = useAiStatus().data;
+  const [aiResult, setAiResult] = useState<{ title: string; description?: string; dueAt?: string; priority?: string; assigneeIds: string[]; labelNames: string[]; subtasks: string[] } | null>(null);
+  const aiParse = useMutation({
+    mutationFn: () => post<NonNullable<typeof aiResult>>(`/workspaces/${workspace!.id}/ai/parse`, { text }),
+    onSuccess: setAiResult,
+    onError: (e: Error) => toast(e instanceof ApiError && e.status === 503 ? t('ai.disabled') : e.message, '⚠️'),
+  });
+  const rules = useMemo(() => parseQuickAdd(text), [text]);
+  const parsed = aiResult
+    ? { title: aiResult.title, dueAt: aiResult.dueAt ? new Date(aiResult.dueAt) : undefined, priority: aiResult.priority as typeof rules.priority, labels: aiResult.labelNames, mentions: [] as string[] }
+    : rules;
+  const mentioned = parsed.mentions
     .map((m) => members.find((u) => u.name.toLowerCase().startsWith(m.toLowerCase()) || u.email.toLowerCase().startsWith(m.toLowerCase())))
     .filter((u): u is NonNullable<typeof u> => !!u);
+  const assignees = aiResult ? members.filter((m) => aiResult.assigneeIds.includes(m.id)) : mentioned;
 
   const create = useMutation({
     mutationFn: () =>
       post<Task>(`/projects/${project!.id}/tasks`, {
         title: parsed.title || text.trim(),
         priority: parsed.priority,
+        description: aiResult?.description ? { text: aiResult.description } : undefined,
         dueAt: parsed.dueAt?.toISOString(),
         labelNames: parsed.labels,
         assigneeIds: assignees.length ? assignees.map((a) => a.id) : user ? [user.id] : [],
         statusId: project!.id === quickAdd.projectId ? quickAdd.statusId : undefined,
         parentId: quickAdd.parentId,
       }),
-    onSuccess: (task) => {
+    onSuccess: async (task) => {
+      for (const sub of aiResult?.subtasks ?? []) {
+        await post(`/projects/${task.projectId}/tasks`, { title: sub, parentId: task.id, assigneeIds: task.assignees.map((a) => a.id) }).catch(() => {});
+      }
       qc.invalidateQueries({ queryKey: ['tasks', task.projectId] });
       qc.invalidateQueries({ queryKey: ['task', quickAdd.parentId] });
       qc.invalidateQueries({ queryKey: ['myTasks'] });
@@ -77,7 +92,10 @@ function QuickAddDialog({ quickAdd }: { quickAdd: NonNullable<ReturnType<typeof 
           <input
             autoFocus
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={(e) => {
+              setText(e.target.value);
+              setAiResult(null);
+            }}
             placeholder={t('task.quickAddPlaceholder')}
             className="h-10 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted"
           />
@@ -102,6 +120,11 @@ function QuickAddDialog({ quickAdd }: { quickAdd: NonNullable<ReturnType<typeof 
           {parsed.labels.map((l) => (
             <Pill key={l}>#{l}</Pill>
           ))}
+          {aiResult?.subtasks.map((st) => (
+            <Pill key={st} tone="lumi">
+              ✦ {st}
+            </Pill>
+          ))}
           {!text && <span className="text-xs text-muted">@ · # · ! · {t('common.tomorrow')} · {locale === 'fa' ? 'ساعت ۱۰' : 'at 10'}</span>}
         </div>
         <div className="flex items-center gap-2 border-t border-line px-5 py-3">
@@ -116,6 +139,11 @@ function QuickAddDialog({ quickAdd }: { quickAdd: NonNullable<ReturnType<typeof 
               </option>
             ))}
           </select>
+          {aiStatus?.enabled && (
+            <Button type="button" size="sm" variant="soft" disabled={!text.trim()} loading={aiParse.isPending} onClick={() => aiParse.mutate()}>
+              {t('ai.parse')}
+            </Button>
+          )}
           <span className="ms-auto hidden text-xs text-muted sm:block">
             <Kbd>↵</Kbd>
           </span>

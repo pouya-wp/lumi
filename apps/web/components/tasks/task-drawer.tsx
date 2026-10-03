@@ -14,7 +14,7 @@ import { useUi } from '@/lib/ui-state';
 import type { Member, Status, TaskDetail } from '@/lib/types';
 import { Avatar, AvatarStack, Button, CheckCircle, cx, Icon, IconButton, Pill, PriorityGlyph, Segmented, Spinner, StatusDot, Textarea } from '../ui';
 import { DatePicker } from '../ui/date-picker';
-import { CustomFieldsSection, DependenciesSection, RecurrencePicker, TimeSection } from './drawer-extras';
+import { AiSection, CustomFieldsSection, DependenciesSection, RecurrencePicker, TimeSection } from './drawer-extras';
 import { Dialog } from '../ui/dialog';
 
 export function TaskDrawer() {
@@ -94,6 +94,7 @@ function DrawerBody({ taskId }: { taskId: string }) {
         />
 
         <ProposalBanner task={data} members={members} />
+        <AiSection task={data} />
 
         <div className="mt-6 grid grid-cols-[110px_1fr] items-center gap-x-4 gap-y-2 text-sm">
           <Prop label={t('task.status')}>

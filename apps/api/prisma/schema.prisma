@@ -83,6 +83,7 @@ model User {
   checkIns      CheckIn[]
   habits        Habit[]
   focusSessions FocusSession[]
+  planBlocks    PlanBlock[]
 }
 
 model RefreshToken {
@@ -168,6 +169,7 @@ model Project {
   views        SavedView[]
   sprints      Sprint[]
   milestones   Milestone[]
+  automations  Automation[]
 
   @@unique([workspaceId, key])
 }
@@ -229,6 +231,7 @@ model Task {
   milestone    Milestone?       @relation(fields: [milestoneId], references: [id], onDelete: SetNull)
   keyResults   KeyResultTask[]
   focusSessions FocusSession[]
+  planBlocks   PlanBlock[]
 
   @@unique([projectId, number])
   @@index([projectId, statusId, orderKey])
@@ -546,4 +549,52 @@ model FocusSession {
   task       Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
 
   @@index([userId, startedAt])
+}
+
+/// "When <trigger> and <conditions>, do <actions>" rule scoped to a project.
+model Automation {
+  id          String          @id @default(cuid())
+  projectId   String
+  name        String
+  enabled     Boolean         @default(true)
+  /// { type: "task.created" | "status.changed" | "priority.changed" | "assignee.added" | "comment.created" | "due.approaching", params }
+  trigger     Json
+  /// [{ field, op, value }]
+  conditions  Json            @default("[]")
+  /// [{ type, params }]
+  actions     Json
+  createdById String
+  runCount    Int             @default(0)
+  lastRunAt   DateTime?
+  createdAt   DateTime        @default(now())
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  runs        AutomationRun[]
+}
+
+model AutomationRun {
+  id           String     @id @default(cuid())
+  automationId String
+  taskId       String?
+  status       String
+  log          Json
+  createdAt    DateTime   @default(now())
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@index([automationId, createdAt])
+  @@index([automationId, taskId])
+}
+
+/// A scheduled slot of the user's day plan.
+model PlanBlock {
+  id      String   @id @default(cuid())
+  userId  String
+  taskId  String?
+  title   String
+  startAt DateTime
+  endAt   DateTime
+  kind    String   @default("task")
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startAt])
 }

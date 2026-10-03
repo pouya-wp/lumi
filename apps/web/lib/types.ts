@@ -119,7 +119,7 @@ export interface TaskFilters {
   q?: string;
 }
 
-export type ViewKind = 'BOARD' | 'LIST' | 'TABLE' | 'CALENDAR' | 'TIMELINE' | 'SPRINTS';
+export type ViewKind = 'BOARD' | 'LIST' | 'TABLE' | 'CALENDAR' | 'TIMELINE' | 'SPRINTS' | 'AUTOMATIONS';
 
 export interface SavedView {
   id: string;
@@ -284,4 +284,34 @@ export interface FocusStats {
   today: { count: number; minutes: number };
   streak: number;
   days: { date: string; count: number; minutes: number }[];
+}
+
+export interface AutomationRule {
+  id: string;
+  projectId: string;
+  name: string;
+  enabled: boolean;
+  trigger: { type: string; params?: Record<string, unknown> };
+  conditions: { field: string; op: string; value?: unknown }[];
+  actions: { type: string; params?: Record<string, unknown> }[];
+  runCount: number;
+  lastRunAt: string | null;
+}
+
+export interface AutomationRun {
+  id: string;
+  taskId: string | null;
+  status: 'SUCCESS' | 'FAILED';
+  log: { type: string; ok: boolean; error?: string }[];
+  createdAt: string;
+}
+
+export interface PlanBlock {
+  id: string;
+  taskId: string | null;
+  title: string;
+  startAt: string;
+  endAt: string;
+  kind: 'task' | 'break';
+  task: { id: string; title: string; priority: string; projectId: string; number: number; completedAt: string | null; project: { key: string; color: string | null; icon: string | null } } | null;
 }

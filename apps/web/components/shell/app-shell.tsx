@@ -9,6 +9,7 @@ import { useSession } from '@/lib/session';
 import { UiStateProvider, useUi } from '@/lib/ui-state';
 import { TaskDrawer } from '../tasks/task-drawer';
 import { cx, Spinner } from '../ui';
+import { AiProvider } from './ai-panel';
 import { CommandPalette } from './command-palette';
 import { QuickAdd } from './quick-add';
 import { Sidebar } from './sidebar';
@@ -18,7 +19,9 @@ import { Topbar } from './topbar';
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <UiStateProvider>
-      <Shell>{children}</Shell>
+      <AiProvider>
+        <Shell>{children}</Shell>
+      </AiProvider>
     </UiStateProvider>
   );
 }

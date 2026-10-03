@@ -4,7 +4,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { JwtModule } from '@nestjs/jwt';
 import { ActivityModule } from './activity/activity.module';
+import { AiModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
+import { AutomationsModule } from './automations/automations.module';
 import { CommentsModule } from './comments/comments.module';
 import { AuthGuard } from './common/auth.guard';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -53,6 +55,8 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     HabitsModule,
     MilestonesModule,
     FocusModule,
+    AutomationsModule,
+    AiModule,
     ActivityModule,
     RealtimeModule,
   ],

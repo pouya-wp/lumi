@@ -3,6 +3,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import { ArrayMaxSize, IsArray, IsBoolean, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { AccessService } from '../common/access.service';
+import { automationDepth } from '../common/automation-context';
 import { Events, type CommentEvent } from '../common/events';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -73,6 +74,7 @@ export class CommentsService {
       taskId,
       commentId: comment.id,
       actorId: userId,
+      depth: automationDepth(),
     } satisfies CommentEvent);
     return comment;
   }
