@@ -943,5 +943,64 @@
       "Beyondex Myth"
     ],
     "badgesTitle": "Badges"
+  },
+  "mobile": {
+    "lock": {
+      "reason": "Confirm it's you to open Lumi",
+      "title": "Your workspace is locked",
+      "unlock": "Unlock",
+      "setting": "Biometric lock",
+      "settingHint": "Fingerprint or Face ID when opening the app",
+      "unsupported": "This device doesn't support biometric lock"
+    },
+    "offline": "Offline — showing saved data",
+    "launch": {
+      "calendar": "Calendar",
+      "chat": "Chat",
+      "docs": "Docs",
+      "focus": "Focus",
+      "ai": "Assistant",
+      "arena": "Arena",
+      "today": "My day"
+    },
+    "calendar": {
+      "empty": "Nothing on this day",
+      "meeting": "Meeting"
+    },
+    "focus": {
+      "title": "Focus",
+      "focus": "Focus",
+      "short": "Short break",
+      "long": "Long break",
+      "start": "Start",
+      "stop": "Stop",
+      "finish": "Done",
+      "today": "Today",
+      "sessions": "{n} sessions",
+      "minutes": "{n} min",
+      "streak": "{n}-day streak",
+      "pickTask": "Which task?",
+      "noTask": "No task",
+      "done": "Nice! Focus session complete 🎉"
+    },
+    "ai": {
+      "title": "Lumi assistant",
+      "hello": "Hi! Ask me anything about your team's work.",
+      "placeholder": "Ask… e.g. “what's overdue this week?”",
+      "off": "AI is not enabled on the server",
+      "standup": "My standup",
+      "suggest": [
+        "What should I focus on today?",
+        "What is overdue?",
+        "What did the team do this week?"
+      ]
+    },
+    "docs": {
+      "readOnly": "Open the page on the web to edit it",
+      "empty": "This page is empty"
+    },
+    "chat": {
+      "newDm": "New message"
+    }
   }
 }

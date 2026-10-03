@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/data.dart';
 import '../../core/models/models.dart';
@@ -19,6 +20,8 @@ const _icons = {
   'comment.mention': '💬',
   'comment.reply': '↩️',
   'workspace.joined': '👋',
+  'badge': '🏅',
+  'automation': '⚙️',
 };
 
 class InboxScreen extends ConsumerWidget {
@@ -37,7 +40,15 @@ class InboxScreen extends ConsumerWidget {
         ref.invalidate(unreadCountProvider);
       }
       final taskId = n.payload['taskId'] as String?;
-      if (taskId != null && context.mounted) showTask(context, taskId);
+      final channelId = n.payload['channelId'] as String?;
+      if (!context.mounted) return;
+      if (taskId != null) {
+        showTask(context, taskId);
+      } else if (channelId != null) {
+        context.push('/chat/$channelId');
+      } else if (n.type == 'badge') {
+        context.push('/arena');
+      }
     }
 
     return Scaffold(
@@ -105,7 +116,12 @@ class InboxScreen extends ConsumerWidget {
                                         text: '${n.actor?.name ?? ''} ',
                                         style: const TextStyle(fontWeight: FontWeight.w700),
                                       ),
-                                      TextSpan(text: s.t('notif.${n.type}', {'title': n.payload['title'] ?? '', 'status': n.payload['status'] ?? ''})),
+                                      TextSpan(
+                                        text: s.t('notif.${n.type}', {
+                                          'title': n.type == 'badge' ? s.t('game.badges.${n.payload['badge']}.name') : n.payload['title'] ?? '',
+                                          'status': n.payload['status'] ?? '',
+                                        }),
+                                      ),
                                     ],
                                   ),
                                   style: const TextStyle(height: 1.5),
