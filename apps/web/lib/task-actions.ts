@@ -2,6 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { del, patch, post, put } from './api';
+import { celebrateAtPointer } from './celebrate';
 import { useToast } from './toast';
 import { useT } from './i18n-client';
 import type { Task } from './types';
@@ -25,7 +26,10 @@ export function useTaskActions() {
 
   const update = useMutation({
     mutationFn: ({ id, data }: { id: string; projectId: string; data: Record<string, unknown> }) => patch<Task>(`/tasks/${id}`, data),
-    onSuccess: (task) => refresh(task),
+    onSuccess: (task) => {
+      refresh(task);
+      qc.invalidateQueries({ queryKey: ['game'] });
+    },
     onError,
   });
   const move = useMutation({
@@ -55,7 +59,9 @@ export function useTaskActions() {
   const toggleDone = (task: Task, statuses: { id: string; category: string }[]) => {
     const done = task.status.category === 'DONE';
     const target = statuses.find((s) => s.category === (done ? 'TODO' : 'DONE'));
-    if (target) update.mutate({ id: task.id, projectId: task.projectId, data: { statusId: target.id } });
+    if (!target) return;
+    if (!done) celebrateAtPointer();
+    update.mutate({ id: task.id, projectId: task.projectId, data: { statusId: target.id } });
   };
 
   return { update, move, remove, setAssignees, respond, toggleDone, refresh };

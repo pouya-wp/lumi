@@ -182,7 +182,7 @@ export interface Activity {
 export interface Notification {
   id: string;
   type: string;
-  payload: { taskId?: string; title?: string; key?: string; workspaceId?: string; note?: string; excerpt?: string; status?: string; proposedDueAt?: string; channelId?: string };
+  payload: { taskId?: string; title?: string; key?: string; workspaceId?: string; note?: string; excerpt?: string; status?: string; proposedDueAt?: string; channelId?: string; badge?: string };
   readAt: string | null;
   createdAt: string;
   actor: Pick<User, 'id' | 'name' | 'avatarUrl'> | null;
@@ -378,4 +378,52 @@ export interface ChatMessage {
   createdAt: string;
   editedAt: string | null;
   deletedAt: string | null;
+}
+
+export interface ReportPerson {
+  user: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  done: number;
+  open: number;
+  overdue: number;
+  inProgress: number;
+  avgCycleHours: number;
+  onTimeRate: number | null;
+  minutes: number;
+  focusMinutes: number;
+  daily: number[];
+}
+
+export interface Report {
+  range: { from: string; to: string };
+  totals: { created: number; completed: number; open: number; wip: number; overdue: number; onTimeRate: number | null; minutes: number; focusMinutes: number };
+  throughput: { day: string; created: number; completed: number }[];
+  cfd: ({ day: string } & Record<'BACKLOG' | 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'DONE', number>)[];
+  cycle: {
+    avgHours: number;
+    medianHours: number;
+    p85Hours: number;
+    avgLeadHours: number;
+    histogram: { key: string; count: number }[];
+    points: { id: string; key: string; title: string; completedAt: string; cycleHours: number; leadHours: number }[];
+  };
+  people: ReportPerson[];
+  projects: { project: Pick<Project, 'id' | 'key' | 'name' | 'icon' | 'color'>; minutes: number; done: number; open: number }[];
+  priorities: { priority: Priority; count: number }[];
+  labels: { label: { id: string; name: string; color: string }; count: number }[];
+  aging: { id: string; key: string; title: string; category: StatusCategory; ageHours: number; assigneeIds: string[] }[];
+}
+
+export interface GameMember {
+  user: Pick<User, 'id' | 'name' | 'avatarUrl'>;
+  xp: number;
+  weekXp: number;
+  level: number;
+  floor: number;
+  next: number;
+  progress: number;
+  streak: { current: number; best: number };
+  done: number;
+  focusMinutes: number;
+  heat: Record<string, number>;
+  badges: { key: string; earnedAt: string }[];
 }

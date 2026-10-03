@@ -24,6 +24,7 @@ import { HealthModule } from './health/health.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProjectsModule } from './projects/projects.module';
+import { ReportsModule } from './reports/reports.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { TasksModule } from './tasks/tasks.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
@@ -61,6 +62,7 @@ import { WorkspacesModule } from './workspaces/workspaces.module';
     AiModule,
     DocsModule,
     ChatModule,
+    ReportsModule,
     ActivityModule,
     RealtimeModule,
   ],

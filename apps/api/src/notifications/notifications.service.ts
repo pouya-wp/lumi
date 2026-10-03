@@ -5,6 +5,7 @@ import { Events, type NotificationEvent } from '../common/events';
 import { PrismaService } from '../prisma/prisma.service';
 
 export type NotificationType =
+  | 'badge'
   | 'task.assigned'
   | 'task.proposed'
   | 'task.proposal.accepted'

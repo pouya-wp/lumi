@@ -34,6 +34,8 @@ export function useRealtime(enabled: boolean) {
       qc.invalidateQueries({ queryKey: ['range'] });
       qc.invalidateQueries({ queryKey: ['taskTime', e.taskId] });
       qc.invalidateQueries({ queryKey: ['timesheet'] });
+      qc.invalidateQueries({ queryKey: ['reports'] });
+      qc.invalidateQueries({ queryKey: ['game'] });
     };
     const onComment = (e: TaskEvent) => {
       qc.invalidateQueries({ queryKey: ['comments', e.taskId] });
@@ -49,7 +51,8 @@ export function useRealtime(enabled: boolean) {
       qc.invalidateQueries({ queryKey: ['unread'] });
       if (n.payload.channelId && location.pathname.includes('/app/chat')) return;
       if (n.type === 'workspace.joined') qc.invalidateQueries({ queryKey: ['workspaces'] });
-      toast(t(`notif.${n.type}`, { title: n.payload.title ?? '', status: n.payload.status ?? '' }));
+      if (n.type === 'badge') qc.invalidateQueries({ queryKey: ['game'] });
+      toast(t(`notif.${n.type}`, { title: n.type === 'badge' ? t(`game.badges.${n.payload.badge}.name`) : (n.payload.title ?? ''), status: n.payload.status ?? '' }));
     };
 
     const onChat = (e: { channelId: string; messageId: string }) => {

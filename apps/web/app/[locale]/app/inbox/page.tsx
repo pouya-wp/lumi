@@ -1,6 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Avatar, Button, cx, Empty, Panel, Segmented, Spinner } from '@/components/ui';
 import { post } from '@/lib/api';
@@ -20,11 +21,14 @@ const ICONS: Record<string, string> = {
   'comment.mention': '💬',
   'comment.reply': '↩️',
   'workspace.joined': '👋',
+  badge: '🏅',
+  automation: '⚙️',
 };
 
 export default function InboxPage() {
   const { t, locale } = useT();
   const { openTask } = useUi();
+  const router = useRouter();
   const [filter, setFilter] = useState<'unread' | 'all'>('all');
   const list = useNotifications(filter === 'unread');
   const qc = useQueryClient();
@@ -38,6 +42,8 @@ export default function InboxPage() {
   const open = (n: Notification) => {
     if (!n.readAt) read.mutate(n.id);
     if (n.payload.taskId) openTask(n.payload.taskId);
+    else if (n.type === 'badge') router.push(`/${locale}/app/arena`);
+    else if (n.payload.channelId) router.push(`/${locale}/app/chat?c=${n.payload.channelId}`);
   };
 
   return (
@@ -74,7 +80,7 @@ export default function InboxPage() {
             <span className="min-w-0 flex-1">
               <span className="block text-sm leading-relaxed">
                 <span className="font-semibold">{n.actor?.name}</span>{' '}
-                {t(`notif.${n.type}`, { title: n.payload.title ?? '', status: n.payload.status ?? '' })}
+                {t(`notif.${n.type}`, { title: n.type === 'badge' ? t(`game.badges.${n.payload.badge}.name`) : (n.payload.title ?? ''), status: n.payload.status ?? '' })}
               </span>
               {(n.payload.note || n.payload.excerpt) && (
                 <span className="mt-1 block truncate rounded-[10px] bg-sunken px-2.5 py-1.5 text-xs text-ink-2">“{n.payload.note ?? n.payload.excerpt}”</span>
