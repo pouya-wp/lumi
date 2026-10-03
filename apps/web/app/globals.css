@@ -530,3 +530,41 @@ body {
 .drag-handle {
   transition: opacity 0.15s;
 }
+
+/* ---------- iPhone safe areas (PWA in standalone mode draws under the notch and home bar) ---------- */
+.safe-shell {
+  padding-top: max(env(safe-area-inset-top), 0px);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+@media (min-width: 640px) {
+  .safe-shell {
+    padding-top: max(env(safe-area-inset-top), 0.75rem);
+    padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+    padding-left: max(env(safe-area-inset-left), 0.75rem);
+    padding-right: max(env(safe-area-inset-right), 0.75rem);
+  }
+}
+.safe-drawer {
+  top: calc(env(safe-area-inset-top) + 0.5rem);
+  bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+}
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: none;
+  }
+}
+
+/* ---------- Small screens ---------- */
+/* Grid items default to min-width:auto, so a wide chart or chip row can stretch a single-column
+   grid past the phone's width. Let them shrink, and clip any stray horizontal overflow (clip, unlike
+   hidden, keeps position: sticky working). */
+main .grid > *,
+main .flex > * {
+  min-width: 0;
+}
+html,
+body {
+  overflow-x: clip;
+}

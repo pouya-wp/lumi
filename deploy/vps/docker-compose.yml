@@ -1,0 +1,96 @@
+# Lumi API + PostgreSQL for a small shared VPS.
+# - Publishes NO host ports: HTTPS reaches the API only through the outbound Cloudflare Tunnel.
+# - Own network and named volumes; nothing outside this project is touched.
+# - Memory-capped so the host's existing services keep their headroom.
+# Managed by install.sh (project name "lumi-vps"); config lives in /opt/lumi/.env.
+name: lumi-vps
+
+services:
+  postgres:
+    image: ${LUMI_POSTGRES_IMAGE:-ghcr.io/pouya-wp/lumi-postgres:16}
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: lumi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?missing POSTGRES_PASSWORD}
+      POSTGRES_DB: lumi
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - effective_cache_size=192MB
+      - -c
+      - work_mem=4MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - max_connections=30
+      - -c
+      - wal_buffers=4MB
+    volumes: [pgdata:/var/lib/postgresql/data]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lumi"]
+      interval: 5s
+      retries: 30
+    networks: [lumi]
+
+  api:
+    image: ${LUMI_API_IMAGE:-ghcr.io/pouya-wp/lumi-api:latest}
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      DATABASE_URL: postgresql://lumi:${POSTGRES_PASSWORD}@postgres:5432/lumi?connection_limit=5
+      JWT_SECRET: ${JWT_SECRET:?missing JWT_SECRET}
+      PUBLIC_API_URL: https://${LUMI_API_DOMAIN:?missing LUMI_API_DOMAIN}
+      PUBLIC_WEB_URL: https://${LUMI_WEB_DOMAIN:?missing LUMI_WEB_DOMAIN}
+      CORS_ORIGINS: https://${LUMI_WEB_DOMAIN},${EXTRA_CORS_ORIGINS:-}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4.1-mini}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      TEAM_EMAILS: ${TEAM_EMAILS:-}
+    mem_limit: 384m
+    networks: [lumi]
+
+  tunnel:
+    image: ${LUMI_CLOUDFLARED_IMAGE:-ghcr.io/pouya-wp/lumi-cloudflared:latest}
+    restart: unless-stopped
+    depends_on: [api]
+    # http2 instead of QUIC: UDP to Cloudflare is often blocked on Iranian networks.
+    command: tunnel --no-autoupdate --protocol http2 run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?missing TUNNEL_TOKEN}
+    mem_limit: 64m
+    networks: [lumi]
+
+  backup:
+    image: ${LUMI_POSTGRES_IMAGE:-ghcr.io/pouya-wp/lumi-postgres:16}
+    restart: unless-stopped
+    depends_on:
+      postgres: { condition: service_healthy }
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes: [/opt/lumi/backups:/backups]
+    mem_limit: 64m
+    networks: [lumi]
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          f=/backups/lumi-$$(date +%Y%m%d-%H%M).sql.gz
+          pg_dump -h postgres -U lumi lumi | gzip > "$$f" && echo "backup $$f"
+          find /backups -name 'lumi-*.sql.gz' -mtime +$$KEEP_DAYS -delete
+          sleep 86400
+        done
+
+networks:
+  lumi:
+    name: lumi-vps
+
+volumes:
+  pgdata:
+    name: lumi-vps-pgdata

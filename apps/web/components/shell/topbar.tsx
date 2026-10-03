@@ -22,11 +22,11 @@ export function Topbar() {
   const ai = useAiPanel();
 
   return (
-    <header className="flex h-[72px] items-center gap-3 px-4 lg:px-5">
+    <header className="flex h-[72px] items-center gap-2 px-3 sm:gap-3 sm:px-4 lg:px-5">
       <IconButton icon="list" label={t('nav2.menu')} className="lg:hidden" onClick={() => setNavOpen(true)} />
 
       <div className="relative lg:w-[248px]">
-        <button onClick={() => setSwitcher(!switcher)} className="flex items-center gap-3 rounded-full p-1 pe-3 transition hover:bg-sunken">
+        <button onClick={() => setSwitcher(!switcher)} className="flex items-center gap-3 rounded-full p-1 transition hover:bg-sunken sm:pe-3">
           <span className="grid size-10 place-items-center rounded-full bg-ink text-sm font-bold text-on-ink">
             {[...(workspace?.name ?? 'L')][0]}
           </span>
@@ -41,7 +41,7 @@ export function Topbar() {
               <Icon name="lock" size={11} /> Beyondex
             </span>
           </span>
-          <Icon name="chevronUpDown" size={14} className="text-muted" />
+          <Icon name="chevronUpDown" size={14} className="hidden text-muted sm:block" />
         </button>
         {switcher && (
           <div className="panel rise absolute top-14 z-30 w-64 p-1.5">
@@ -65,11 +65,13 @@ export function Topbar() {
 
       <button
         onClick={() => setPaletteOpen(true)}
-        className="ms-auto flex h-11 max-w-md flex-1 items-center gap-2.5 rounded-full bg-sunken px-4 text-sm text-muted shadow-[inset_0_0_0_1px_var(--line)] transition hover:text-ink-2 md:ms-6 lg:ms-0"
+        className="ms-auto flex h-11 min-w-0 max-w-md flex-1 items-center justify-center gap-2.5 rounded-full sm:justify-start bg-sunken px-4 text-sm text-muted shadow-[inset_0_0_0_1px_var(--line)] transition hover:text-ink-2 md:ms-6 lg:ms-0"
       >
         <Icon name="search" size={17} />
         <span className="hidden flex-1 text-start sm:block">{t('nav2.search')}</span>
-        <Kbd>⌘K</Kbd>
+        <span className="hidden sm:inline">
+          <Kbd>⌘K</Kbd>
+        </span>
       </button>
       <IconButton icon="plus" label={t('task.new')} onClick={() => openQuickAdd()} className="bg-lumi text-white shadow-[0_8px_20px_-8px_var(--lumi)] hover:bg-lumi" />
 

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0B0C0F" />
+    <title>Lumi · آفلاین</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body { margin: 0; min-height: 100dvh; display: grid; place-items: center; font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+        background: radial-gradient(60% 50% at 50% 0%, #1b1f6b, #0a0f3c 70%); color: #fff; text-align: center; padding: 24px; }
+      img { width: 84px; height: 84px; border-radius: 22px; box-shadow: 0 20px 60px -20px #4f5bff; }
+      h1 { font-size: 22px; margin: 22px 0 8px; }
+      p { opacity: .7; margin: 0 0 22px; line-height: 1.8; }
+      button { font: inherit; border: 0; border-radius: 999px; padding: 12px 26px; background: #fff; color: #0a0f3c; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/icon-192.png" alt="" />
+      <h1>اینترنت در دسترس نیست</h1>
+      <p>به محض وصل شدن، لومی دوباره باز می‌شه.<br />You're offline — Lumi will reload when you're back.</p>
+      <button onclick="location.reload()">تلاش دوباره</button>
+    </main>
+    <script>addEventListener('online', () => location.reload());</script>
+  </body>
+</html>

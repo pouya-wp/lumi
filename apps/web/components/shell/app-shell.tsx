@@ -59,7 +59,7 @@ function Shell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-dvh p-0 sm:p-3">
+    <div className="safe-shell min-h-dvh p-0 sm:p-3">
       <Spotlight />
       <div className="flex min-h-[calc(100dvh-1.5rem)] flex-col bg-panel shadow-panel sm:rounded-[var(--radius-frame)]">
         <Topbar />
@@ -77,7 +77,7 @@ function Shell({ children }: { children: ReactNode }) {
         <div className={cx('absolute inset-0 bg-black/30 transition', navOpen ? 'opacity-100' : 'opacity-0')} onClick={() => setNavOpen(false)} />
         <aside
           className={cx(
-            'absolute inset-y-2 start-2 w-[280px] rounded-[var(--radius-panel)] bg-panel pt-4 shadow-panel transition duration-300 ease-[var(--ease-lumi)]',
+            'safe-drawer absolute inset-y-2 start-2 w-[280px] rounded-[var(--radius-panel)] bg-panel pt-4 shadow-panel transition duration-300 ease-[var(--ease-lumi)]',
             navOpen ? 'translate-x-0' : '-translate-x-[110%] rtl:translate-x-[110%]',
           )}
         >

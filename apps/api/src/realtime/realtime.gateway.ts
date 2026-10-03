@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
+import { corsOrigin } from '../common/cors';
 import { OnGatewayConnection, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import type { Server, Socket } from 'socket.io';
 import { Events, type CommentEvent, type NotificationEvent, type ProjectEvent, type TaskEvent } from '../common/events';
@@ -11,7 +12,7 @@ import { PrismaService } from '../prisma/prisma.service';
  * Pushes domain events to clients. Each socket joins `user:<id>` and one `workspace:<id>` room per membership;
  * clients use the events to invalidate cached queries.
  */
-@WebSocketGateway({ namespace: '/realtime', cors: { origin: true } })
+@WebSocketGateway({ namespace: '/realtime', cors: { origin: corsOrigin() } })
 export class RealtimeGateway implements OnGatewayConnection {
   @WebSocketServer() server!: Server;
   private readonly logger = new Logger(RealtimeGateway.name);

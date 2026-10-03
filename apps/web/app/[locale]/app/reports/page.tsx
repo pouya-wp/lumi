@@ -55,7 +55,7 @@ export default function ReportsPage() {
     <div className="flex flex-col gap-3">
       <Panel aurora="#16A34A" aurora2="#4F5BFF" className="rise flex flex-wrap items-center gap-3 p-5">
         <span className="grid size-12 place-items-center rounded-[16px] bg-ink text-xl text-on-ink">📈</span>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-56">
           <h1 className="text-2xl font-semibold">{t('reports.title')}</h1>
           <p className="text-sm text-muted">{t('reports.subtitle')}</p>
         </div>

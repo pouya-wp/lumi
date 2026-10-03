@@ -14,3 +14,4 @@ apps/mobile/build/
 apps/mobile/.flutter-plugins*
 *.tsbuildinfo
 deploy/backups/
+ccr-ca.tmp.crt

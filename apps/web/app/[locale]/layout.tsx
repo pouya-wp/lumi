@@ -22,9 +22,23 @@ const meem = localFont({
 export const metadata: Metadata = {
   title: { default: 'Lumi — by Beyondex', template: '%s · Lumi' },
   description: 'Team task management, planning and collaboration.',
+  applicationName: 'Lumi',
+  appleWebApp: { capable: true, title: 'Lumi', statusBarStyle: 'black-translucent' },
+  formatDetection: { telephone: false },
+  // Next only emits the generic tag; older iOS needs the Apple one to open full-screen from the home screen.
+  other: { 'apple-mobile-web-app-capable': 'yes' },
+  icons: {
+    icon: [
+      { url: '/icons/favicon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [{ url: '/icons/apple-touch-icon.png', sizes: '180x180' }],
+  },
 };
 
 export const viewport: Viewport = {
+  // Draw under the iPhone notch/home bar; the shell pads itself with safe-area insets.
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#F1F2F4' },
     { media: '(prefers-color-scheme: dark)', color: '#07080C' },

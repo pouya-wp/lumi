@@ -1,5 +1,6 @@
 import { Logger, OnModuleDestroy } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { corsOrigin } from '../common/cors';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import type { Namespace, Socket } from 'socket.io';
 import * as Y from 'yjs';
@@ -22,7 +23,7 @@ const toBytes = (data: unknown) => (data instanceof Uint8Array ? data : new Uint
  * Yjs relay for real-time co-editing. The server keeps one Y.Doc per open page, applies and
  * rebroadcasts updates, relays awareness (cursors), and persists the merged state (debounced).
  */
-@WebSocketGateway({ namespace: '/collab', cors: { origin: true }, maxHttpBufferSize: 5e6 })
+@WebSocketGateway({ namespace: '/collab', cors: { origin: corsOrigin() }, maxHttpBufferSize: 5e6 })
 export class CollabGateway implements OnGatewayConnection, OnGatewayDisconnect, OnModuleDestroy {
   @WebSocketServer() server!: Namespace;
   private readonly logger = new Logger(CollabGateway.name);
