@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'models/collab.dart';
 import 'models/models.dart';
 import 'providers.dart';
 
@@ -67,3 +68,62 @@ void invalidateTaskViews(void Function(ProviderOrFamily) invalidate, {String? ta
     invalidate(commentsProvider(taskId));
   }
 }
+
+// ---------- Phase 7: calendar, docs, chat, focus, arena ----------
+
+final rangeTasksProvider = FutureProvider.autoDispose.family<List<Task>, ({DateTime from, DateTime to})>((ref, r) async {
+  final wid = ref.watch(workspaceIdProvider);
+  return _tasks(
+    await ref
+        .watch(apiProvider)
+        .get<List<dynamic>>(
+          '/workspaces/$wid/tasks',
+          query: {'from': r.from.toUtc().toIso8601String(), 'to': r.to.toUtc().toIso8601String(), 'includeDone': 'true'},
+        ),
+  );
+});
+
+final meetingsProvider = FutureProvider.autoDispose.family<List<DocBrief>, ({DateTime from, DateTime to})>((ref, r) async {
+  final wid = ref.watch(workspaceIdProvider);
+  final list = await ref
+      .watch(apiProvider)
+      .get<List<dynamic>>('/workspaces/$wid/meetings', query: {'from': r.from.toUtc().toIso8601String(), 'to': r.to.toUtc().toIso8601String()});
+  return [for (final d in list) DocBrief.fromJson(d as _J)];
+});
+
+final docsProvider = FutureProvider.autoDispose<List<DocBrief>>((ref) async {
+  final wid = ref.watch(workspaceIdProvider);
+  return [for (final d in await ref.watch(apiProvider).get<List<dynamic>>('/workspaces/$wid/docs')) DocBrief.fromJson(d as _J)];
+});
+
+final docProvider = FutureProvider.autoDispose.family<DocDetail, String>((ref, id) async {
+  return DocDetail.fromJson(await ref.watch(apiProvider).get<_J>('/docs/$id'));
+});
+
+final channelsProvider = FutureProvider.autoDispose<List<Channel>>((ref) async {
+  final wid = ref.watch(workspaceIdProvider);
+  return [for (final c in await ref.watch(apiProvider).get<List<dynamic>>('/workspaces/$wid/channels')) Channel.fromJson(c as _J)];
+});
+
+final messagesProvider = FutureProvider.autoDispose.family<List<ChatMessage>, String>((ref, channelId) async {
+  return [for (final m in await ref.watch(apiProvider).get<List<dynamic>>('/channels/$channelId/messages')) ChatMessage.fromJson(m as _J)];
+});
+
+final threadProvider = FutureProvider.autoDispose.family<List<ChatMessage>, String>((ref, id) async {
+  final res = await ref.watch(apiProvider).get<_J>('/messages/$id/thread');
+  return [ChatMessage.fromJson(res['root'] as _J), for (final m in res['replies'] as List) ChatMessage.fromJson(m as _J)];
+});
+
+final focusProvider = FutureProvider.autoDispose<FocusStats>((ref) async {
+  return FocusStats.fromJson(await ref.watch(apiProvider).get<_J>('/me/focus'));
+});
+
+final gameProvider = FutureProvider.autoDispose<List<GameMember>>((ref) async {
+  final wid = ref.watch(workspaceIdProvider);
+  final res = await ref.watch(apiProvider).get<_J>('/workspaces/$wid/gamification');
+  return [for (final m in res['members'] as List) GameMember.fromJson(m as _J)];
+});
+
+final aiStatusProvider = FutureProvider.autoDispose<bool>((ref) async {
+  return (await ref.watch(apiProvider).get<_J>('/ai/status'))['enabled'] as bool? ?? false;
+});

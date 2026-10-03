@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Base URL: pass --dart-define=API_URL=... ; defaults to the Android emulator host or localhost.
 String get apiUrl {
@@ -47,9 +50,35 @@ class ApiException implements Exception {
   String toString() => message;
 }
 
+/// Last good GET responses, so screens still render when the network drops.
+class ResponseCache {
+  ResponseCache(this._prefs);
+
+  final SharedPreferences _prefs;
+  static const _prefix = 'lumi.cache:';
+
+  String _key(String path, Map<String, dynamic>? query) =>
+      '$_prefix$path?${query == null ? '' : Uri(queryParameters: query.map((k, v) => MapEntry(k, '$v'))).query}';
+
+  void write(String path, Map<String, dynamic>? query, Object? data) => _prefs.setString(_key(path, query), jsonEncode(data));
+
+  Object? read(String path, Map<String, dynamic>? query) {
+    final raw = _prefs.getString(_key(path, query));
+    return raw == null ? null : jsonDecode(raw);
+  }
+
+  Future<void> clear() async {
+    for (final k in _prefs.getKeys().where((k) => k.startsWith(_prefix)).toList()) {
+      await _prefs.remove(k);
+    }
+  }
+}
+
 /// Dio client that attaches the access token and transparently rotates it once on 401.
+/// GETs fall back to [cache] when the server is unreachable; [offline] reflects that state.
 class ApiClient {
-  ApiClient(this.tokens, {required this.onUnauthorized}) {
+  ApiClient(this.tokens, {required this.onUnauthorized, this.cache, String? baseUrl})
+    : _dio = Dio(BaseOptions(baseUrl: '${baseUrl ?? apiUrl}/api', connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 20))) {
     _dio.interceptors.add(
       QueuedInterceptorsWrapper(
         onRequest: (options, handler) {
@@ -77,7 +106,12 @@ class ApiClient {
 
   final TokenStore tokens;
   final void Function() onUnauthorized;
-  final Dio _dio = Dio(BaseOptions(baseUrl: '$apiUrl/api', connectTimeout: const Duration(seconds: 10), receiveTimeout: const Duration(seconds: 20)));
+  final ResponseCache? cache;
+  final ValueNotifier<bool> offline = ValueNotifier(false);
+  final Dio _dio;
+
+  @visibleForTesting
+  Dio get dio => _dio;
 
   Future<bool> _refresh() async {
     try {
@@ -100,7 +134,21 @@ class ApiClient {
     }
   }
 
-  Future<T> get<T>(String path, {Map<String, dynamic>? query}) => _call(() => _dio.get(path, queryParameters: query));
+  Future<T> get<T>(String path, {Map<String, dynamic>? query}) async {
+    try {
+      final data = await _call<T>(() => _dio.get(path, queryParameters: query));
+      offline.value = false;
+      cache?.write(path, query, data);
+      return data;
+    } on ApiException catch (e) {
+      if (e.status != null) rethrow;
+      offline.value = true;
+      final cached = cache?.read(path, query);
+      if (cached is T) return cached;
+      rethrow;
+    }
+  }
+
   Future<T> post<T>(String path, [Object? body]) => _call(() => _dio.post(path, data: body ?? {}));
   Future<T> patch<T>(String path, Object body) => _call(() => _dio.patch(path, data: body));
   Future<T> put<T>(String path, Object body) => _call(() => _dio.put(path, data: body));

@@ -9,6 +9,7 @@ import '../../core/theme/lumi_colors.dart';
 import '../../core/utils/dates.dart';
 import '../../core/widgets/widgets.dart';
 import '../shell/settings_sheet.dart';
+import 'launch_strip.dart';
 import '../tasks/task_row.dart';
 import '../tasks/task_sheet.dart';
 
@@ -57,7 +58,7 @@ class HomeScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  IconButton(onPressed: () => context.push('/team'), icon: const Icon(Icons.group_outlined)),
+                  IconButton(onPressed: () => context.push('/calendar'), icon: const Icon(Icons.calendar_month_outlined)),
                   GestureDetector(
                     onTap: () => showSettings(context),
                     child: LumiAvatar(name: session.user.name, size: 38),
@@ -68,6 +69,8 @@ class HomeScreen extends ConsumerWidget {
               Text(s.t('dash.welcome'), style: TextStyle(color: p.muted, fontSize: 16)),
               Text('${session.user.name.split(' ').first} 👋', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w700, height: 1.2)),
               const SizedBox(height: 18),
+              const LaunchStrip(),
+              const SizedBox(height: 14),
               dash.when(
                 loading: () => const Padding(padding: EdgeInsets.all(60), child: Loading()),
                 error: (e, _) => ErrorView(error: e, onRetry: () => ref.invalidate(dashboardProvider)),

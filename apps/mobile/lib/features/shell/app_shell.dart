@@ -63,9 +63,39 @@ class AppShell extends ConsumerWidget {
       );
     }
 
+    final api = ref.watch(apiProvider);
     return Scaffold(
       extendBody: true,
-      body: shell,
+      body: Column(
+        children: [
+          ValueListenableBuilder<bool>(
+            valueListenable: api.offline,
+            builder: (_, offline, __) => AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              child: offline
+                  ? Container(
+                      width: double.infinity,
+                      color: LumiColors.warn,
+                      padding: EdgeInsets.fromLTRB(16, MediaQuery.paddingOf(context).top + 6, 16, 6),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.cloud_off_rounded, size: 16, color: Colors.white),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              s.t('mobile.offline'),
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(width: double.infinity),
+            ),
+          ),
+          Expanded(child: shell),
+        ],
+      ),
       bottomNavigationBar: SafeArea(
         minimum: const EdgeInsets.fromLTRB(14, 0, 14, 12),
         child: ClipRRect(

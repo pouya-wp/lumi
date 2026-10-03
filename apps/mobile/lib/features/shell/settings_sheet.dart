@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/device/app_lock.dart';
 import '../../core/providers.dart';
 import '../../core/theme/lumi_colors.dart';
 import '../../core/widgets/widgets.dart';
@@ -82,6 +83,31 @@ class _Settings extends ConsumerWidget {
                 ),
             ],
             const SizedBox(height: 10),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              secondary: const Icon(Icons.fingerprint_rounded),
+              title: Text(s.t('mobile.lock.setting')),
+              subtitle: Text(s.t('mobile.lock.settingHint'), style: TextStyle(fontSize: 12, color: p.muted)),
+              value: ref.watch(appLockProvider).enabled,
+              onChanged: (on) async {
+                final lock = ref.read(appLockProvider.notifier);
+                final messenger = ScaffoldMessenger.of(context);
+                if (on && !await lock.supported) {
+                  messenger.showSnackBar(SnackBar(content: Text(s.t('mobile.lock.unsupported'))));
+                  return;
+                }
+                await lock.setEnabled(on, s.t('mobile.lock.reason'));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.emoji_events_outlined),
+              title: Text(s.t('nav2.arena')),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/arena');
+              },
+            ),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.group_outlined),

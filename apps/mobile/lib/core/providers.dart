@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'api/api_client.dart';
 import 'l10n/strings.dart';
@@ -9,12 +10,20 @@ import 'models/models.dart';
 final catalogsProvider = Provider<Map<String, Strings>>((ref) => throw UnimplementedError());
 final tokenStoreProvider = Provider<TokenStore>((ref) => throw UnimplementedError());
 
+/// Optional persistent prefs (offline cache, app lock); null in tests.
+final prefsProvider = Provider<SharedPreferences?>((ref) => null);
+
 final localeProvider = StateProvider<String>((ref) => 'fa');
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 final stringsProvider = Provider<Strings>((ref) => ref.watch(catalogsProvider)[ref.watch(localeProvider)]!);
 
 final apiProvider = Provider<ApiClient>((ref) {
-  return ApiClient(ref.watch(tokenStoreProvider), onUnauthorized: () => ref.read(sessionProvider.notifier).signOut());
+  final prefs = ref.watch(prefsProvider);
+  return ApiClient(
+    ref.watch(tokenStoreProvider),
+    onUnauthorized: () => ref.read(sessionProvider.notifier).signOut(),
+    cache: prefs == null ? null : ResponseCache(prefs),
+  );
 });
 
 class Session {
@@ -65,6 +74,7 @@ class SessionNotifier extends AsyncNotifier<Session?> {
     final refresh = tokens.refresh;
     if (refresh != null) ref.read(apiProvider).post('/auth/logout', {'refreshToken': refresh}).ignore();
     await tokens.clear();
+    await ref.read(apiProvider).cache?.clear();
     state = const AsyncData(null);
   }
 
