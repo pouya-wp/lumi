@@ -1,7 +1,13 @@
 {
   "brand": "Lumi",
   "by": "Made by Beyondex",
-  "nav": { "features": "Features", "methods": "Methods", "ai": "AI", "download": "Get the app", "start": "Get started" },
+  "nav": {
+    "features": "Features",
+    "methods": "Methods",
+    "ai": "AI",
+    "download": "Get the app",
+    "start": "Get started"
+  },
   "hero": {
     "sticker": "New ✨ AI inside",
     "title1": "Light up",
@@ -16,21 +22,303 @@
     "today": "Today",
     "focus": "Focus",
     "team": "Team",
-    "tasks": ["Design the dashboard", "Sprint meeting at 10", "Review auth PR"],
+    "tasks": [
+      "Design the dashboard",
+      "Sprint meeting at 10",
+      "Review auth PR"
+    ],
     "progress": "Sprint progress"
   },
   "bento": {
     "title": "Lumi is not just another tool!",
     "subtitle": "Whatever way your team works, it's in here",
     "items": [
-      { "key": "tasks", "emoji": "✅", "title": "Smart tasks", "body": "Assign to teammates, accept or decline, negotiate deadlines." },
-      { "key": "calendar", "emoji": "📅", "title": "Jalali & Gregorian", "body": "Holidays, meetings and time blocks in one view." },
-      { "key": "goals", "emoji": "🎯", "title": "OKRs & sprints", "body": "Scrum, Kanban, GTD and Eisenhower — one click each." },
-      { "key": "time", "emoji": "⏱️", "title": "Pomodoro & time", "body": "Timers, timesheets and per-project reports." },
-      { "key": "notes", "emoji": "📝", "title": "Docs & meetings", "body": "Real-time wiki; meeting action items become tasks." },
-      { "key": "daily", "emoji": "🤖", "title": "AI assistant", "body": "“Plan my day” — Lumi handles the rest." }
+      {
+        "key": "tasks",
+        "emoji": "✅",
+        "title": "Smart tasks",
+        "body": "Assign to teammates, accept or decline, negotiate deadlines."
+      },
+      {
+        "key": "calendar",
+        "emoji": "📅",
+        "title": "Jalali & Gregorian",
+        "body": "Holidays, meetings and time blocks in one view."
+      },
+      {
+        "key": "goals",
+        "emoji": "🎯",
+        "title": "OKRs & sprints",
+        "body": "Scrum, Kanban, GTD and Eisenhower — one click each."
+      },
+      {
+        "key": "time",
+        "emoji": "⏱️",
+        "title": "Pomodoro & time",
+        "body": "Timers, timesheets and per-project reports."
+      },
+      {
+        "key": "notes",
+        "emoji": "📝",
+        "title": "Docs & meetings",
+        "body": "Real-time wiki; meeting action items become tasks."
+      },
+      {
+        "key": "daily",
+        "emoji": "🤖",
+        "title": "AI assistant",
+        "body": "“Plan my day” — Lumi handles the rest."
+      }
     ]
   },
-  "night": { "title": "Time your team had a personal assistant", "cta": "Start now" },
-  "footer": { "rights": "© 2026 Beyondex — All rights reserved" }
+  "night": {
+    "title": "Time your team had a personal assistant",
+    "cta": "Start now"
+  },
+  "footer": {
+    "rights": "© 2026 Beyondex — All rights reserved"
+  },
+  "auth": {
+    "loginTitle": "Welcome back 👋",
+    "loginSub": "Sign in to your workspace",
+    "registerTitle": "Let’s get started ✨",
+    "registerSub": "Set up your team in under a minute",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "workspace": "Team or workspace name",
+    "login": "Sign in",
+    "register": "Create account",
+    "noAccount": "No account?",
+    "haveAccount": "Have an account?",
+    "logout": "Log out",
+    "passwordHint": "At least 8 characters"
+  },
+  "nav2": {
+    "home": "Dashboard",
+    "myTasks": "My tasks",
+    "inbox": "Inbox",
+    "projects": "Projects",
+    "team": "Team",
+    "others": "Others",
+    "settings": "Settings",
+    "newProject": "New project",
+    "search": "Search everything…",
+    "invite": "Invite",
+    "menu": "Menu",
+    "help": "Help"
+  },
+  "dash": {
+    "welcome": "Welcome back,",
+    "overview": "Team throughput",
+    "last7": "Last 7 days",
+    "done": "Completed",
+    "open": "Open",
+    "overdue": "Overdue",
+    "inProgress": "In progress",
+    "created": "Created this week",
+    "vsLast": "vs last week",
+    "goal": "Overall progress",
+    "focus": "Today’s focus",
+    "focusEmpty": "Nothing due today. Make some tea ☕",
+    "team": "Team workload",
+    "activity": "Latest activity",
+    "upcoming": "Upcoming deadlines",
+    "now": "Now",
+    "tasksOpen": "{n} open",
+    "doneWeek": "{n} done this week",
+    "daily": "Work day"
+  },
+  "task": {
+    "new": "New task",
+    "quickAddPlaceholder": "e.g. tomorrow at 10 sales report @ali #marketing !urgent",
+    "create": "Create",
+    "title": "Title",
+    "description": "Description",
+    "descriptionPlaceholder": "Details, links, acceptance criteria…",
+    "status": "Status",
+    "priority": "Priority",
+    "assignees": "Assignees",
+    "due": "Due",
+    "start": "Start",
+    "estimate": "Estimate (min)",
+    "points": "Points",
+    "labels": "Labels",
+    "checklist": "Checklist",
+    "addItem": "New item…",
+    "subtasks": "Subtasks",
+    "addSubtask": "New subtask…",
+    "comments": "Discussion",
+    "commentPlaceholder": "Write a comment…",
+    "send": "Send",
+    "activity": "History",
+    "delete": "Delete task",
+    "deleteConfirm": "Delete this task?",
+    "noDue": "No due date",
+    "unassigned": "Unassigned",
+    "proposalFor": "{name} proposed this task to you",
+    "proposalWaiting": "Waiting for {name}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "counter": "Other date",
+    "counterFrom": "{name} proposed {date} instead",
+    "acceptCounter": "Accept new date",
+    "declined": "Declined",
+    "declineReason": "Reason (optional)",
+    "created": "Created",
+    "empty": "No tasks yet",
+    "dropHere": "Drop here",
+    "createdBy": "Created by {name}"
+  },
+  "priority": {
+    "URGENT": "Urgent",
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low",
+    "NONE": "No priority"
+  },
+  "views": {
+    "board": "Board",
+    "list": "List"
+  },
+  "myTasks": {
+    "title": "My tasks",
+    "today": "Today",
+    "overdue": "Overdue",
+    "upcoming": "Upcoming",
+    "open": "All open",
+    "done": "Done"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "markAll": "Mark all read",
+    "empty": "Inbox zero. Breathe 🌿",
+    "unread": "Unread",
+    "all": "All"
+  },
+  "notif": {
+    "task.assigned": "assigned you “{title}”",
+    "task.proposed": "proposed “{title}” to you",
+    "task.proposal.accepted": "accepted “{title}”",
+    "task.proposal.declined": "declined “{title}”",
+    "task.proposal.countered": "proposed a new date for “{title}”",
+    "task.status": "moved “{title}” to {status}",
+    "comment.mention": "mentioned you in “{title}”",
+    "comment.reply": "replied to you in “{title}”",
+    "workspace.joined": "joined the workspace"
+  },
+  "activity": {
+    "created": "created",
+    "updated": "edited",
+    "status.changed": "changed status of",
+    "deleted": "deleted",
+    "commented": "commented on",
+    "checklist.added": "added a checklist item to",
+    "checklist.updated": "updated the checklist of",
+    "checklist.removed": "removed a checklist item from",
+    "dependency.added": "added a dependency to",
+    "dependency.removed": "removed a dependency from"
+  },
+  "team": {
+    "title": "Team members",
+    "inviteTitle": "Invite a teammate",
+    "invitePlaceholder": "teammate@email.com",
+    "sendInvite": "Invite",
+    "pending": "Pending invites",
+    "added": "Added to the team ✨",
+    "invited": "Invite saved; they join when they sign up",
+    "remove": "Remove"
+  },
+  "roles": {
+    "OWNER": "Owner",
+    "ADMIN": "Admin",
+    "MEMBER": "Member",
+    "GUEST": "Guest",
+    "VIEWER": "Viewer"
+  },
+  "project": {
+    "new": "New project",
+    "name": "Project name",
+    "icon": "Icon",
+    "create": "Create project",
+    "tasks": "{n} tasks",
+    "empty": "No projects yet",
+    "addStatus": "New column"
+  },
+  "palette": {
+    "placeholder": "Search or run a command… (e.g. MA-12)",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "actions": "Commands",
+    "noResults": "Nothing found",
+    "goHome": "Go to dashboard",
+    "goMine": "My tasks",
+    "goInbox": "Inbox",
+    "newTask": "New task",
+    "toggleTheme": "Toggle theme",
+    "hint": "↵ open · ↑↓ move · esc close"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "close": "Close",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "daysLeft": "{n} days left",
+    "daysLate": "{n} days late",
+    "you": "You",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "landing": {
+    "marquee": [
+      "Scrum",
+      "Kanban",
+      "OKR",
+      "GTD",
+      "Eisenhower",
+      "Pomodoro",
+      "Shape Up",
+      "Time blocking",
+      "Habits",
+      "Roadmaps"
+    ],
+    "flowTitle": "Don’t hand off work — propose it",
+    "flowSub": "Assigning to teammates is a conversation, not an order.",
+    "flow": [
+      {
+        "emoji": "🤝",
+        "title": "Propose",
+        "body": "Sara creates a task for Ali; he’s notified instantly."
+      },
+      {
+        "emoji": "📅",
+        "title": "Negotiate",
+        "body": "Ali is booked this week — he proposes another date."
+      },
+      {
+        "emoji": "✅",
+        "title": "Agree",
+        "body": "Sara accepts and the new due date is applied."
+      }
+    ],
+    "stats": [
+      {
+        "n": "3",
+        "l": "people, one team"
+      },
+      {
+        "n": "14",
+        "l": "planning modules"
+      },
+      {
+        "n": "∞",
+        "l": "focus"
+      }
+    ],
+    "previewTag": "Live from the dashboard"
+  }
 }

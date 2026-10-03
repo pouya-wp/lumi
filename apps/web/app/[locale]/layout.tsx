@@ -1,38 +1,54 @@
-import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
+import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
-import { dir, isLocale, locales } from '@/lib/i18n';
+import type { ReactNode } from 'react';
+import { Providers } from '@/components/providers';
+import { dir, getDictionary, isLocale, locales } from '@/lib/i18n';
+import { themeScript } from '@/lib/theme';
 import '../globals.css';
 
+const meem = localFont({
+  src: [
+    { path: '../fonts/Meem-Light.ttf', weight: '300' },
+    { path: '../fonts/Meem-Regular.ttf', weight: '400' },
+    { path: '../fonts/Meem-Medium.ttf', weight: '500' },
+    { path: '../fonts/Meem-DemiBold.ttf', weight: '600' },
+    { path: '../fonts/Meem-Bold.ttf', weight: '700' },
+  ],
+  variable: '--font-meem',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Lumi by Beyondex',
+  title: { default: 'Lumi — by Beyondex', template: '%s · Lumi' },
   description: 'Team task management, planning and collaboration.',
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#F1F2F4' },
+    { media: '(prefers-color-scheme: dark)', color: '#07080C' },
+  ],
 };
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: {
-  children: ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
+export default async function LocaleLayout({ children, params }: { children: ReactNode; params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
   return (
-    <html lang={locale} dir={dir(locale)}>
+    <html lang={locale} dir={dir(locale)} className={meem.variable} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap"
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>{children}</body>
+      <body className="grain min-h-dvh">
+        <Providers locale={locale} dict={getDictionary(locale)}>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }
