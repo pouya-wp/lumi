@@ -1,0 +1,16 @@
+{$LUMI_DOMAIN} {
+	encode zstd gzip
+
+	# API, realtime sockets (/realtime, /collab), webhooks, iCal feeds and Swagger at /api/docs.
+	@api path /api/* /socket.io/*
+	reverse_proxy @api api:4000
+
+	reverse_proxy web:3000
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}

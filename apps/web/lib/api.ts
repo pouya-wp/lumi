@@ -1,3 +1,4 @@
+/** API origin; an empty string means same origin (production behind one reverse proxy). */
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
 const ACCESS = 'lumi.access';

@@ -1,0 +1,107 @@
+name: Release
+
+# Tag a version (git tag v1.0.0 && git push origin v1.0.0) to publish Docker images to GHCR,
+# build the Android APK and attach it to a GitHub Release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  images:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [api, web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/lumi-${{ matrix.app }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  android:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      # Repository variable, e.g. https://lumi.beyondex.io (Settings → Secrets and variables → Actions → Variables).
+      API_URL: ${{ vars.LUMI_API_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Check API URL
+        run: |
+          if [ -z "$API_URL" ]; then echo "::error::Set the LUMI_API_URL repository variable to your server URL"; exit 1; fi
+      - name: Release signing key (optional)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > android/app/release.jks
+            printf "storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/key.properties
+          fi
+      - run: flutter pub get
+      - run: flutter build apk --release --dart-define=API_URL=$API_URL
+      - run: |
+          name="lumi-${GITHUB_REF_NAME//\//-}.apk"
+          mv build/app/outputs/flutter-apk/app-release.apk "$name"
+          echo "APK=$name" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: apps/mobile/${{ env.APK }}
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: [images, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: "*.apk"
+          generate_release_notes: true
+          body: |
+            ## Lumi ${{ github.ref_name }}
+
+            - Server images: `ghcr.io/${{ github.repository_owner }}/lumi-api:${{ github.ref_name }}` and `ghcr.io/${{ github.repository_owner }}/lumi-web:${{ github.ref_name }}`
+            - Android: download the APK below and install it (allow "install from this source").
+            - Deployment guide: docs/DEPLOYMENT.md · What's new: CHANGELOG.md

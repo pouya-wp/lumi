@@ -7,8 +7,8 @@ import { setupApp } from './setup-app';
 async function bootstrap() {
   const app = setupApp(await NestFactory.create(AppModule, { cors: true, rawBody: true }));
 
-  const config = new DocumentBuilder().setTitle('Lumi API').setVersion('0.1').addBearerAuth().build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
+  const config = new DocumentBuilder().setTitle('Lumi API').setVersion('1.0.0').addBearerAuth().build();
+  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 
   await app.listen(Number(process.env.PORT ?? 4000));
 }
