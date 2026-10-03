@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent, type ReactNode } from 'react';
 import { Button, cx, Empty, Icon, IconButton, Input, Panel, Pill, Spinner } from '@/components/ui';
 import { del, get, patch, post, tokens } from '@/lib/api';
+import { copyText } from '@/lib/clipboard';
 import { timeAgo } from '@/lib/format';
 import { num, useT } from '@/lib/i18n-client';
 import { useProjects } from '@/lib/queries';
@@ -37,7 +38,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 function useCopy() {
   const toast = useToast();
   const { t } = useT();
-  return (text: string) => navigator.clipboard?.writeText(text).then(() => toast(t('integ.copied'), '📋'));
+  return (text: string) => copyText(text).then((ok) => ok && toast(t('integ.copied'), '📋'));
 }
 
 function CopyField({ value, secret }: { value: string; secret?: boolean }) {

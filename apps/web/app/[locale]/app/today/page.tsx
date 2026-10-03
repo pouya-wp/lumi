@@ -1,5 +1,6 @@
 'use client';
 
+import { copyText } from '@/lib/clipboard';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -156,7 +157,7 @@ export default function TodayPage() {
                 size="sm"
                 variant="ghost"
                 onClick={() => {
-                  navigator.clipboard?.writeText(standup);
+                  copyText(standup);
                   setCopied(true);
                   setTimeout(() => setCopied(false), 1500);
                 }}

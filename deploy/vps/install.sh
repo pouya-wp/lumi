@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# Lumi API + database installer for a shared VPS.
+# Lumi installer for a shared VPS: web app, API and database behind one port (default 8088).
 #
-#   bash deploy/vps/install.sh        (run as root, from a clone of the repository)
+#   git clone https://github.com/pouya-wp/lumi.git /opt/lumi-src; bash /opt/lumi-src/deploy/vps/install.sh
 #
 # Safety rules this script follows:
 #   - Everything lives in /opt/lumi and in Docker objects named lumi-vps*.
-#   - No host ports are published; nginx, firewall, systemd and other containers are never touched.
+#   - Only one host port (LUMI_PORT, default 8088) is published; nginx, 80/443, firewall, systemd
+#     and other containers are never touched.
 #   - The only foreign objects it may delete are containers whose name or image matches
 #     hermes|opencode|warp, and only after you confirm the exact list.
 #   - Never runs any docker "prune" command.
@@ -16,7 +17,8 @@ LUMI_DIR=/opt/lumi
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMPOSE=(docker compose -p lumi-vps --env-file "$LUMI_DIR/.env" -f "$LUMI_DIR/docker-compose.yml")
 JUNK_RE='hermes|open-?code|warp'
-MIN_FREE_MB=700
+MIN_FREE_MB=500
+LUMI_PORT=${LUMI_PORT:-8088}
 
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
 info() { printf '\033[36m›\033[0m %s\n' "$*"; }
@@ -94,7 +96,7 @@ fi
 
 avail=$(awk '/MemAvailable/ {print int($2/1024)}' /proc/meminfo)
 if [ "$avail" -lt "$MIN_FREE_MB" ] && [ -z "$(docker ps -q --filter name=lumi-vps-api)" ]; then
-  warn "Only ${avail} MB RAM available; Lumi needs about ${MIN_FREE_MB} MB (postgres 256 + api 384 + tunnel 64)."
+  warn "Only ${avail} MB RAM available; Lumi uses about 350 MB (hard-capped at about 1 GB)."
   [ "${LUMI_FORCE:-}" = yes ] || confirm "Continue anyway?" || die "Stopped to protect the existing services."
 fi
 
@@ -102,45 +104,41 @@ fi
 mkdir -p "$LUMI_DIR/backups"
 chmod 700 "$LUMI_DIR"
 cp "$HERE/docker-compose.yml" "$LUMI_DIR/docker-compose.yml"
+cp "$HERE/Caddyfile" "$LUMI_DIR/Caddyfile"
 
 if [ ! -f "$LUMI_DIR/.env" ]; then
-  bold "Configuration (saved to $LUMI_DIR/.env)"
-  ask LUMI_API_DOMAIN "API hostname (the Cloudflare Tunnel public hostname)" lumi-api.beyondex.one
-  ask LUMI_WEB_DOMAIN "Web app hostname (Vercel)" lumi.beyondex.one
-  ask EXTRA_CORS_ORIGINS "Extra allowed web origin, e.g. https://lumi-xxx.vercel.app (optional)" ""
-  ask TUNNEL_TOKEN "Cloudflare Tunnel token" ""
-  [ -n "$TUNNEL_TOKEN" ] || die "A tunnel token is required (Cloudflare → Zero Trust → Networks → Tunnels)."
-  ask TEAM_EMAILS "Team emails: Pouya, Amirhossein, Matin (comma separated)" "pouya@beyondex.io,amirhossein@beyondex.io,matin@beyondex.io"
-  ask OPENAI_API_KEY "OpenAI API key (optional, Enter to skip)" ""
-  ask OPENAI_BASE_URL "OpenAI-compatible base URL (a proxy if openai.com is blocked)" "https://api.openai.com/v1"
-  ask LUMI_VERSION "Image version" latest
+  # The Android app is built for this port, and another service's port must never be taken.
+  if ss -ltnH "sport = :$LUMI_PORT" 2>/dev/null | grep -q .; then
+    die "Port $LUMI_PORT is already used by another service. Re-run with LUMI_PORT=<free port> (the Android app then needs a rebuild for it)."
+  fi
+  ip=${LUMI_HOST:-$(curl -4 -fsS --max-time 6 https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}')}
+  [ -n "$ip" ] || die "Could not detect the server IP; re-run with LUMI_HOST=<ip>."
   umask 077
-  cat >"$LUMI_DIR/.env" <<EOF
-LUMI_API_DOMAIN=$LUMI_API_DOMAIN
-LUMI_WEB_DOMAIN=$LUMI_WEB_DOMAIN
-EXTRA_CORS_ORIGINS=$EXTRA_CORS_ORIGINS
-TUNNEL_TOKEN=$TUNNEL_TOKEN
-POSTGRES_PASSWORD=$(rand 32)
-JWT_SECRET=$(rand 48)
-ALLOW_SIGNUP=false
-TEAM_EMAILS=$TEAM_EMAILS
-OPENAI_API_KEY=$OPENAI_API_KEY
-OPENAI_BASE_URL=$OPENAI_BASE_URL
-LUMI_API_IMAGE=${LUMI_API_IMAGE:-ghcr.io/pouya-wp/lumi-api:$LUMI_VERSION}
-EOF
-  for v in LUMI_POSTGRES_IMAGE LUMI_CLOUDFLARED_IMAGE; do
-    [ -n "${!v:-}" ] && echo "$v=${!v}" >>"$LUMI_DIR/.env"
-  done
+  {
+    echo "LUMI_PORT=$LUMI_PORT"
+    echo "LUMI_PUBLIC_URL=http://$ip:$LUMI_PORT"
+    echo "POSTGRES_PASSWORD=$(rand 32)"
+    echo "JWT_SECRET=$(rand 48)"
+    echo "ALLOW_SIGNUP=false"
+    echo "TEAM_EMAILS=${TEAM_EMAILS:-pouya@beyondex.io,amirhossein@beyondex.io,matin@beyondex.io}"
+    echo "# Optional AI: an OpenAI-compatible key and base URL (openai.com is blocked from Iran; use a proxy URL)."
+    echo "OPENAI_API_KEY=${OPENAI_API_KEY:-}"
+    echo "OPENAI_BASE_URL=${OPENAI_BASE_URL:-https://api.openai.com/v1}"
+    for v in LUMI_API_IMAGE LUMI_WEB_IMAGE LUMI_POSTGRES_IMAGE LUMI_CADDY_IMAGE; do
+      if [ -n "${!v:-}" ]; then echo "$v=${!v}"; fi
+    done
+  } >"$LUMI_DIR/.env"
   info "Saved $LUMI_DIR/.env"
 else
   info "Using existing $LUMI_DIR/.env"
 fi
+URL=$(grep '^LUMI_PUBLIC_URL=' "$LUMI_DIR/.env" | cut -d= -f2)
 
 # ---------------------------------------------------------------- images
 if [ "${LUMI_SKIP_PULL:-}" != yes ]; then
   info "Pulling images from ghcr.io…"
   if ! "${COMPOSE[@]}" pull; then
-    warn "Pull failed. If the packages are private, log in with a GitHub token that has read:packages."
+    warn "Pull failed. If the images are private on GitHub, log in once with a token that has read:packages."
     ask GH_USER "GitHub username" ""
     ask GH_TOKEN "GitHub token" ""
     echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_USER" --password-stdin
@@ -149,7 +147,7 @@ if [ "${LUMI_SKIP_PULL:-}" != yes ]; then
 fi
 
 # ---------------------------------------------------------------- start
-info "Starting Lumi (no host ports are published)…"
+info "Starting Lumi on port $(grep '^LUMI_PORT=' "$LUMI_DIR/.env" | cut -d= -f2)…"
 "${COMPOSE[@]}" up -d --remove-orphans
 
 info "Waiting for the API (runs database migrations on first start)…"
@@ -173,13 +171,13 @@ fi
 
 bold "Done."
 "${COMPOSE[@]}" ps --format '    {{.Service}}\t{{.Status}}'
-info "Tunnel log (look for 'Registered tunnel connection'):"
-"${COMPOSE[@]}" logs --tail 5 tunnel | sed 's/^/    /' || true
-cat <<EOF
+cat <<MSG
 
-  API:      https://$(grep '^LUMI_API_DOMAIN=' "$LUMI_DIR/.env" | cut -d= -f2)/api/docs
-  Update:   cd $HERE/../.. && git pull && bash deploy/vps/install.sh
+  Lumi:     $URL
+            open it on any device; on iPhone: Share → Add to Home Screen
+  Android:  install the Lumi APK — it already points to this server
+  Update:   git -C /opt/lumi-src pull && bash /opt/lumi-src/deploy/vps/install.sh
   Logs:     docker compose -p lumi-vps logs -f api
   Backups:  $LUMI_DIR/backups (daily)
-  Remove:   bash deploy/vps/uninstall.sh   (keeps data unless --purge)
-EOF
+  Remove:   bash /opt/lumi-src/deploy/vps/uninstall.sh   (keeps data unless --purge)
+MSG

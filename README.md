@@ -41,7 +41,7 @@ pnpm dev   # api: http://localhost:4000 (Swagger: /api/docs) · web: http://loca
 موبایل: [apps/mobile/README.md](apps/mobile/README.md)
 
 ## انتشار
-حالت فعلی تیم (API روی VPS + وب روی Vercel): [deploy/vps/README.md](deploy/vps/README.md)
+حالت فعلی تیم (همه‌چیز روی VPS فعلی، یک پورت، بدون دامنه): [deploy/vps/README.md](deploy/vps/README.md)
 
 سرور اختصاصی (همه‌چیز با Docker):
 ```bash
