@@ -1002,5 +1002,76 @@
     "chat": {
       "newDm": "New message"
     }
+  },
+  "integ": {
+    "title": "Settings & integrations",
+    "subtitle": "Connect Lumi to your team's tools — GitHub, Telegram, calendars and the API.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "rotate": "New token",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "connected": "Connected",
+    "notConnected": "Not connected",
+    "save": "Save",
+    "delete": "Delete",
+    "adminOnly": "Only admins can configure this",
+    "keys": {
+      "title": "API keys",
+      "hint": "For scripts and CI; a key acts as you, only within this workspace.",
+      "name": "Key name (e.g. CI)",
+      "create": "Create key",
+      "once": "This key is shown only once — copy it now.",
+      "lastUsed": "Last used {when}",
+      "never": "Never used",
+      "revoke": "Revoke",
+      "example": "Example"
+    },
+    "hooks": {
+      "title": "Webhooks",
+      "hint": "Each event is POSTed to your URL, signed with HMAC-SHA256.",
+      "url": "https://example.com/lumi-webhook",
+      "add": "Add webhook",
+      "events": "Events",
+      "secret": "Signing secret",
+      "ping": "Test",
+      "active": "Active",
+      "deliveries": "Recent deliveries",
+      "none": "No webhooks yet"
+    },
+    "github": {
+      "title": "GitHub",
+      "hint": "Commits and PRs mentioning a task key (like APP-12) get linked; “fixes APP-12” closes the task.",
+      "steps": "In your repo: Settings → Webhooks → Add webhook, paste this URL and secret, choose application/json and the Push and Pull request events.",
+      "payload": "Payload URL",
+      "secret": "Secret"
+    },
+    "telegram": {
+      "title": "Telegram bot",
+      "hint": "Every message to the bot becomes a task, /today lists your day, and your notifications arrive in Telegram.",
+      "token": "Bot token from @BotFather",
+      "project": "Default project",
+      "link": "Connect my Telegram",
+      "linked": "Your Telegram is linked ✅",
+      "open": "Open in Telegram",
+      "webhookError": "Bot connected but the webhook wasn’t set (needs a public HTTPS URL): {error}"
+    },
+    "ical": {
+      "title": "Calendar feed (iCal)",
+      "hint": "See your dated tasks and meetings in Google or Apple Calendar. This link is private.",
+      "how": "In Google Calendar: Other calendars → From URL"
+    },
+    "import": {
+      "title": "Import from CSV",
+      "hint": "From Jira, Trello, Asana, ClickUp or Excel — columns are detected automatically.",
+      "pick": "Choose a CSV file",
+      "project": "Into project",
+      "preview": "Preview",
+      "run": "Import {n} tasks",
+      "done": "{n} tasks imported",
+      "skipped": "{n} rows skipped",
+      "columns": "Detected columns",
+      "errors": "Errors"
+    }
   }
 }
