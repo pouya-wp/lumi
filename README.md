@@ -1,52 +1,81 @@
-# ✦ Lumi — by Beyondex
+<div align="center">
 
-سیستم مدیریت کار، برنامه‌ریزی و همکاری تیمی — وب، اندروید و iOS.
+# ✦ Lumi
 
-| سند | محتوا |
-|---|---|
-| [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) | لیست کامل فیچرها، user storyها و معیار پذیرش |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | معماری، مدل داده، تصمیم‌های کلیدی |
-| [docs/DESIGN.md](docs/DESIGN.md) | زبان طراحی «Playful Pro» و توکن‌ها |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | فازبندی پیاده‌سازی |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | **انتشار روی سرور، ساخت حساب‌های تیم، اپ موبایل، بکاپ** |
-| [docs/PUBLIC_API.md](docs/PUBLIC_API.md) | API عمومی، وب‌هوک، گیت‌هاب، تلگرام، iCal، ورود CSV |
-| [CHANGELOG.md](CHANGELOG.md) | تغییرات نسخه‌ها |
+### Modern Collaborative Workspace, Team Intelligence & Productivity Platform
 
-## در یک نگاه
-- **کار و برنامه‌ریزی:** تسک با پیشنهاد/مذاکره‌ی ددلاین، بورد، لیست، جدول، تقویم شمسی، گانت، بار کاری، تایم‌شیت
-- **روش‌ها:** اسپرینت، OKR، GTD، آیزنهاور، پومودورو، عادت‌ها، رودمپ
-- **همکاری:** اسناد شبیه Notion با ویرایش هم‌زمان، چت تیمی، جلسه‌ها، استندآپ
-- **هوش مصنوعی (OpenAI):** ساخت تسک از متن، شکستن تسک، خلاصه، دستیار، برنامه‌ی روز
-- **تحلیل و انگیزه:** گزارش CFD و زمان چرخه، خروجی CSV، آرنا با XP و نشان
-- **یکپارچه‌سازی:** API عمومی، وب‌هوک، گیت‌هاب، ربات تلگرام، iCal، ورود CSV
-- **موبایل:** اندروید و iOS با حالت آفلاین، قفل بیومتریک و اعلان
+[![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20iOS%20%7C%20Android-black?style=flat-square&logo=flutter)](https://flutter.dev)
+[![TypeScript](https://img.shields.io/badge/Stack-Node.js%20%2B%20TypeScript-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Flutter](https://img.shields.io/badge/Mobile-Flutter%203.x-02569B?style=flat-square&logo=flutter)](https://flutter.dev)
+[![Realtime](https://img.shields.io/badge/Realtime-Yjs%20CRDTs%20%2B%20WebSocket-orange?style=flat-square)](https://yjs.dev)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![Author](https://img.shields.io/badge/Author-Pouya%20Sadeghpour-181717?style=flat-square&logo=github)](https://github.com/pouya-wp)
 
-## ساختار
+<p align="center">
+  <b>Lumi</b> is an all-in-one team workspace uniting project planning, sprint methodologies, Notion-style real-time collaborative docs, native Flutter mobile apps, AI assistants, and enterprise API integrations into a unified, fluid experience.
+</p>
+
+</div>
+
+---
+
+## ✨ Features
+
+- 📋 **Flexible Planning Views** — Kanban boards, interactive task lists, spreadsheet tables, Shamsi/Solar calendars, Gantt timelines, and team workloads.
+- ⚡ **Methodology Engines** — Built-in Agile Sprints, OKRs, GTD, Eisenhower Matrix, Pomodoro focus mode, and habit tracking.
+- 📝 **Real-Time Collaborative Docs** — Notion-style block editor powered by Yjs CRDTs for sub-millisecond multi-user synchronization.
+- 🤖 **AI Assistant** — Natural language task extraction, subtask decomposition, daily agendas, and meeting summarization.
+- 📱 **Native Mobile Parity** — Offline-first Flutter app for iOS and Android with biometric authentication and background sync.
+- 🔗 **Integrations & Webhooks** — Full public REST API, webhooks, GitHub repository syncing, Telegram bot, and iCal calendar export.
+
+---
+
+## 🏗️ Architecture
+
 ```
-apps/api         NestJS + Prisma + PostgreSQL
-apps/web         Next.js + Tailwind (fa/en, RTL)
-apps/mobile      Flutter (Android & iOS)
-packages/shared  enumها، توکن‌های دیزاین، ابزارها
-infra            docker-compose (Postgres+pgvector, Redis, MinIO, Mailpit)
+Lumi Monorepo Structure
+├── apps/
+│   ├── web/        (Next.js / Vite web client with Soft Canvas UI)
+│   ├── api/        (Fastify / Node.js backend with WebSocket & Yjs server)
+│   └── mobile/     (Flutter cross-platform application for Android & iOS)
+├── packages/
+│   ├── core/       (Shared domain types, validation schemas, and utilities)
+│   ├── design/     (Design tokens, icons, and reusable component library)
+│   └── realtime/   (WebSocket and CRDT synchronization engine)
+└── docs/           (Comprehensive product specs, deployment, and API guides)
 ```
 
-## شروع
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20+
+- Flutter 3.22+ (for mobile)
+- Docker / Docker Compose
+
+### Development Setup
+
 ```bash
+# Clone the repository
+git clone https://github.com/pouya-wp/lumi.git
+cd lumi
+
+# Install monorepo dependencies
 pnpm install
-pnpm infra:up
-cp apps/api/.env.example apps/api/.env
-pnpm --filter @lumi/api prisma:migrate
-pnpm dev   # api: http://localhost:4000 (Swagger: /api/docs) · web: http://localhost:3000
-```
-موبایل: [apps/mobile/README.md](apps/mobile/README.md)
 
-## انتشار
-حالت فعلی تیم (همه‌چیز روی VPS فعلی، یک پورت، بدون دامنه): [deploy/vps/README.md](deploy/vps/README.md)
-
-سرور اختصاصی (همه‌چیز با Docker):
-```bash
-cd deploy && cp .env.example .env   # دامنه و رمزها
-docker compose up -d
-docker compose exec api node dist/scripts/seed-team.js
+# Start development services
+pnpm dev
 ```
-جزئیات در [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+---
+
+## 📄 License
+
+Distributed under the MIT License.
+
+---
+
+<div align="center">
+  <sub>Crafted with precision & passion by <b><a href="https://github.com/pouya-wp">Pouya Sadeghpour</a></b></sub>
+</div>
